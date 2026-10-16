@@ -4,12 +4,17 @@ Generates publication-quality figures for Exploratory Data Analysis, Model Evalu
 Regression Diagnostics, and Feature Importance.
 """
 import os
+import warnings
 from typing import List, Dict
 import matplotlib.pyplot as plt
 import seaborn as sns
 import numpy as np
 import pandas as pd
 from scipy import stats
+
+# Suppress minor library deprecation notices
+warnings.filterwarnings("ignore", category=FutureWarning)
+warnings.filterwarnings("ignore", category=UserWarning)
 
 # Configure aesthetics
 plt.style.use("seaborn-v0_8-whitegrid" if "seaborn-v0_8-whitegrid" in plt.style.available else "default")
@@ -158,7 +163,7 @@ class Visualizer:
         """Heatmap showing features selected across methods."""
         plt.figure(figsize=(10, 8))
         matrix_df = comp_df.set_index("Feature")
-        numeric_matrix = matrix_df.applymap(lambda x: 1 if x == "Yes" else 0)
+        numeric_matrix = (matrix_df == "Yes").astype(int)
 
         sns.heatmap(
             numeric_matrix,
@@ -182,10 +187,10 @@ class Visualizer:
         """Plot grouped bar charts comparing R2, RMSE, and MAE across models."""
         fig, axes = plt.subplots(1, 3, figsize=(18, 5))
 
-        models = metrics_df["Model"]
+        models = metrics_df["Model"].tolist()
 
         # R-squared
-        sns.barplot(data=metrics_df, x="Model", y="R2", ax=axes[0], palette="Blues_d")
+        sns.barplot(data=metrics_df, x="Model", y="R2", hue="Model", ax=axes[0], palette="Blues_d", legend=False)
         axes[0].set_title("Test R² Score (Higher is Better)", fontsize=12, fontweight="bold")
         axes[0].set_ylim(0.7, 0.9)
         axes[0].set_xticks(range(len(models)))
@@ -195,7 +200,7 @@ class Visualizer:
                              ha="center", va="bottom", fontsize=8, xytext=(0, 3), textcoords="offset points")
 
         # RMSE
-        sns.barplot(data=metrics_df, x="Model", y="RMSE", ax=axes[1], palette="Oranges_d")
+        sns.barplot(data=metrics_df, x="Model", y="RMSE", hue="Model", ax=axes[1], palette="Oranges_d", legend=False)
         axes[1].set_title("Test RMSE (Lower is Better)", fontsize=12, fontweight="bold")
         axes[1].set_ylim(0, max(metrics_df["RMSE"]) * 1.25)
         axes[1].set_xticks(range(len(models)))
@@ -205,7 +210,7 @@ class Visualizer:
                              ha="center", va="bottom", fontsize=8, xytext=(0, 3), textcoords="offset points")
 
         # MAE
-        sns.barplot(data=metrics_df, x="Model", y="MAE", ax=axes[2], palette="Greens_d")
+        sns.barplot(data=metrics_df, x="Model", y="MAE", hue="Model", ax=axes[2], palette="Greens_d", legend=False)
         axes[2].set_title("Test MAE (Lower is Better)", fontsize=12, fontweight="bold")
         axes[2].set_ylim(0, max(metrics_df["MAE"]) * 1.25)
         axes[2].set_xticks(range(len(models)))
