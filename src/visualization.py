@@ -29,8 +29,15 @@ class Visualizer:
         self.output_dir = output_dir
         os.makedirs(self.output_dir, exist_ok=True)
 
-    def plot_target_distribution(self, df: pd.DataFrame, target_col: str = "Life expectancy"):
-        """Plot target distribution and status comparison."""
+    def plot_target_distribution(
+        self,
+        df: pd.DataFrame,
+        target_col: str = "Life expectancy",
+        output_name: str = "01_target_distribution.png",
+        unit: str = "Years",
+        group_col: str = "Status"
+    ):
+        """Plot target distribution and categorical grouping comparison."""
         fig, axes = plt.subplots(1, 2, figsize=(14, 5))
 
         # KDE & Histogram
@@ -40,34 +47,44 @@ class Visualizer:
         axes[0].axvline(mean_val, color="#d9534f", linestyle="--", label=f"Mean: {mean_val:.1f}")
         axes[0].axvline(median_val, color="#5cb85c", linestyle=":", label=f"Median: {median_val:.1f}")
         axes[0].set_title(f"Target Distribution: {target_col}", fontsize=13, fontweight="bold")
-        axes[0].set_xlabel("Life Expectancy (Years)")
+        axes[0].set_xlabel(f"{target_col} ({unit})")
         axes[0].set_ylabel("Count")
         axes[0].legend()
 
-        # Boxplot by Status
-        if "Status" in df.columns:
-            status_labels = df["Status"].copy()
-            if status_labels.dtype in [int, float, np.int64]:
-                status_labels = status_labels.map({0: "Developing", 1: "Developed"})
+        # Boxplot by grouping column if present
+        if group_col in df.columns:
+            group_labels = df[group_col].copy()
+            if group_labels.dtype in [int, float, np.int64]:
+                group_labels = group_labels.map({0: "Developing", 1: "Developed"})
             sns.boxplot(
-                x=status_labels,
+                x=group_labels,
                 y=df[target_col],
-                hue=status_labels,
+                hue=group_labels,
                 ax=axes[1],
-                palette=["#f0ad4e", "#0275d8"],
+                palette=["#f0ad4e", "#0275d8", "#5cb85c"],
                 legend=False
             )
-            axes[1].set_title("Life Expectancy by Development Status", fontsize=13, fontweight="bold")
-            axes[1].set_xlabel("Country Status")
-            axes[1].set_ylabel("Life Expectancy (Years)")
+            axes[1].set_title(f"{target_col} by {group_col}", fontsize=13, fontweight="bold")
+            axes[1].set_xlabel(group_col)
+            axes[1].set_ylabel(f"{target_col} ({unit})")
+        else:
+            # Fallback to single boxplot
+            sns.boxplot(y=df[target_col], ax=axes[1], color="#0275d8")
+            axes[1].set_title(f"Boxplot: {target_col}", fontsize=13, fontweight="bold")
+            axes[1].set_ylabel(f"{target_col} ({unit})")
 
         plt.tight_layout()
-        path = os.path.join(self.output_dir, "01_target_distribution.png")
+        path = os.path.join(self.output_dir, output_name)
         plt.savefig(path, dpi=300)
         plt.close()
         return path
 
-    def plot_correlation_matrix(self, df: pd.DataFrame):
+    def plot_correlation_matrix(
+        self,
+        df: pd.DataFrame,
+        output_name: str = "02_correlation_matrix.png",
+        title: str = "Feature Correlation Matrix"
+    ):
         """Plot comprehensive correlation heatmap."""
         plt.figure(figsize=(16, 12))
         num_df = df.select_dtypes(include=[np.number])
@@ -90,14 +107,15 @@ class Visualizer:
             fmt=".2f",
             annot_kws={"size": 8}
         )
-        plt.title("WHO Life Expectancy Feature Correlation Matrix", fontsize=15, fontweight="bold", pad=15)
+        plt.title(title, fontsize=15, fontweight="bold", pad=15)
         plt.tight_layout()
-        path = os.path.join(self.output_dir, "02_correlation_matrix.png")
+        path = os.path.join(self.output_dir, output_name)
         plt.savefig(path, dpi=300)
         plt.close()
         return path
 
-    def plot_missing_values(self, raw_df: pd.DataFrame, clean_df: pd.DataFrame):
+
+    def plot_missing_values(self, raw_df: pd.DataFrame, clean_df: pd.DataFrame, output_name: str = "03_missing_values_heatmap.png"):
         """Plot missing values comparison before and after imputation."""
         fig, axes = plt.subplots(1, 2, figsize=(15, 6))
 
@@ -106,18 +124,29 @@ class Visualizer:
         raw_missing = raw_missing[raw_missing > 0].sort_values(ascending=True)
         raw_pct = (raw_missing / len(raw_df)) * 100
 
-        axes[0].barh(raw_pct.index, raw_pct.values, color="#e74c3c")
-        axes[0].set_title("Missing Values Percentage Before Imputation", fontsize=12, fontweight="bold")
-        axes[0].set_xlabel("Missing Percentage (%)")
-        for i, v in enumerate(raw_pct.values):
-            axes[0].text(v + 0.5, i, f"{v:.1f}% ({raw_missing.iloc[i]})", va="center", fontsize=9)
-        axes[0].set_xlim(0, max(raw_pct.values) + 8)
+        if len(raw_pct) > 0:
+            axes[0].barh(raw_pct.index, raw_pct.values, color="#e74c3c")
+            axes[0].set_title("Missing Values Percentage Before Imputation", fontsize=12, fontweight="bold")
+            axes[0].set_xlabel("Missing Percentage (%)")
+            for i, v in enumerate(raw_pct.values):
+                axes[0].text(v + 0.5, i, f"{v:.1f}% ({raw_missing.iloc[i]})", va="center", fontsize=9)
+            axes[0].set_xlim(0, max(raw_pct.values) + 8)
+        else:
+            axes[0].text(
+                0.5, 0.5,
+                "No Missing Values Detected in Raw Dataset!\n(0% Missing)",
+                horizontalalignment="center", verticalalignment="center",
+                fontsize=13, color="#27ae60", fontweight="bold",
+                bbox=dict(boxstyle="round,pad=1", facecolor="#eafaf1", edgecolor="#27ae60", lw=2)
+            )
+            axes[0].set_title("Missing Values Status Before Imputation", fontsize=12, fontweight="bold")
+            axes[0].axis("off")
 
         # After
         clean_missing = clean_df.isnull().sum().sum()
         axes[1].text(
             0.5, 0.5,
-            f"All Missing Values Successfully Imputed!\nRemaining Missing: {clean_missing}\nDataset Ready for Modeling: {clean_df.shape[0]} Rows",
+            f"All Features Clean & Preprocessed!\nRemaining Missing: {clean_missing}\nDataset Ready for Modeling: {clean_df.shape[0]} Rows",
             horizontalalignment="center",
             verticalalignment="center",
             fontsize=13,
@@ -129,37 +158,59 @@ class Visualizer:
         axes[1].axis("off")
 
         plt.tight_layout()
-        path = os.path.join(self.output_dir, "03_missing_values_heatmap.png")
+        path = os.path.join(self.output_dir, output_name)
         plt.savefig(path, dpi=300)
         plt.close()
         return path
 
-    def plot_feature_distributions(self, df: pd.DataFrame):
-        """Plot distribution of 6 key predictors."""
-        key_features = [
-            "Schooling", "Income composition of resources", "Adult Mortality",
-            "HIV/AIDS", "Diphtheria", "BMI"
-        ]
-        fig, axes = plt.subplots(2, 3, figsize=(16, 9))
-        axes = axes.flatten()
+    def plot_feature_distributions(
+        self,
+        df: pd.DataFrame,
+        features: List[str] = None,
+        output_name: str = "04_feature_distributions.png",
+        title: str = "Distributions of Key Predictor Features"
+    ):
+        """Plot distribution of key predictors."""
+        if features is None:
+            features = [
+                "Schooling", "Income composition of resources", "Adult Mortality",
+                "HIV/AIDS", "Diphtheria", "BMI"
+            ]
+        # Filter features that exist in df
+        valid_features = [f for f in features if f in df.columns][:6]
+        if not valid_features:
+            numeric_cols = df.select_dtypes(include=[np.number]).columns.tolist()
+            valid_features = numeric_cols[:6]
+
+        n_plots = len(valid_features)
+        n_rows = 2 if n_plots > 3 else 1
+        n_cols = min(3, n_plots) if n_plots > 0 else 1
+
+        fig, axes = plt.subplots(n_rows, n_cols, figsize=(5 * n_cols, 4.5 * n_rows))
+        axes = np.array(axes).flatten()
 
         colors = ["#3498db", "#2ecc71", "#e74c3c", "#9b59b6", "#f39c12", "#1abc9c"]
 
-        for i, feat in enumerate(key_features):
-            if feat in df.columns:
-                sns.histplot(df[feat].dropna(), kde=True, ax=axes[i], color=colors[i], bins=25)
-                axes[i].set_title(f"Distribution: {feat}", fontsize=11, fontweight="bold")
-                axes[i].set_xlabel(feat)
-                axes[i].set_ylabel("Frequency")
+        for i, feat in enumerate(valid_features):
+            sns.histplot(df[feat].dropna(), kde=True, ax=axes[i], color=colors[i % len(colors)], bins=25)
+            axes[i].set_title(f"Distribution: {feat}", fontsize=11, fontweight="bold")
+            axes[i].set_xlabel(feat)
+            axes[i].set_ylabel("Frequency")
 
-        plt.suptitle("Distributions of Key Predictor Features", fontsize=14, fontweight="bold", y=1.00)
+        # Hide unused subplots
+        for j in range(len(valid_features), len(axes)):
+            axes[j].axis("off")
+
+        plt.suptitle(title, fontsize=14, fontweight="bold", y=1.00)
         plt.tight_layout()
-        path = os.path.join(self.output_dir, "04_feature_distributions.png")
+        path = os.path.join(self.output_dir, output_name)
         plt.savefig(path, dpi=300)
         plt.close()
         return path
 
-    def plot_feature_selection_comparison(self, comp_df: pd.DataFrame):
+    def plot_feature_selection_comparison(
+        self, comp_df: pd.DataFrame, output_name: str = "05_feature_selection_comparison.png", title: str = "Feature Selection Comparison across Methods"
+    ):
         """Heatmap showing features selected across methods."""
         plt.figure(figsize=(10, 8))
         matrix_df = comp_df.set_index("Feature")
@@ -174,16 +225,18 @@ class Visualizer:
             linewidths=1,
             linecolor="white"
         )
-        plt.title("Feature Selection Comparison across Methods", fontsize=14, fontweight="bold", pad=15)
+        plt.title(title, fontsize=14, fontweight="bold", pad=15)
         plt.xlabel("Selection Strategy", fontsize=11, fontweight="bold")
         plt.ylabel("Features", fontsize=11, fontweight="bold")
         plt.tight_layout()
-        path = os.path.join(self.output_dir, "05_feature_selection_comparison.png")
+        path = os.path.join(self.output_dir, output_name)
         plt.savefig(path, dpi=300)
         plt.close()
         return path
 
-    def plot_metrics_comparison(self, metrics_df: pd.DataFrame):
+    def plot_metrics_comparison(
+        self, metrics_df: pd.DataFrame, output_name: str = "06_model_metrics_comparison.png"
+    ):
         """Plot grouped bar charts comparing R2, RMSE, and MAE across models."""
         fig, axes = plt.subplots(1, 3, figsize=(18, 5))
 
@@ -192,7 +245,7 @@ class Visualizer:
         # R-squared
         sns.barplot(data=metrics_df, x="Model", y="R2", hue="Model", ax=axes[0], palette="Blues_d", legend=False)
         axes[0].set_title("Test R² Score (Higher is Better)", fontsize=12, fontweight="bold")
-        axes[0].set_ylim(0.7, 0.9)
+        axes[0].set_ylim(max(0, min(metrics_df["R2"]) * 0.8), min(1.0, max(metrics_df["R2"]) * 1.15))
         axes[0].set_xticks(range(len(models)))
         axes[0].set_xticklabels(models, rotation=35, ha="right", fontsize=9)
         for p in axes[0].patches:
@@ -220,14 +273,20 @@ class Visualizer:
                              ha="center", va="bottom", fontsize=8, xytext=(0, 3), textcoords="offset points")
 
         plt.tight_layout()
-        path = os.path.join(self.output_dir, "06_model_metrics_comparison.png")
+        path = os.path.join(self.output_dir, output_name)
         plt.savefig(path, dpi=300)
         plt.close()
         return path
 
     def plot_actual_vs_predicted(
-        self, y_test: np.ndarray, y_pred_base: np.ndarray, y_pred_best: np.ndarray,
-        base_name: str = "Baseline (All Features)", best_name: str = "Best Feature-Selected Model"
+        self,
+        y_test: np.ndarray,
+        y_pred_base: np.ndarray,
+        y_pred_best: np.ndarray,
+        base_name: str = "Baseline (All Features)",
+        best_name: str = "Best Feature-Selected Model",
+        target_label: str = "Life Expectancy (Years)",
+        output_name: str = "07_actual_vs_predicted.png"
     ):
         """Plot Actual vs Predicted scatter plots with 45-degree reference line."""
         fig, axes = plt.subplots(1, 2, figsize=(14, 6))
@@ -243,12 +302,11 @@ class Visualizer:
             ax.plot([min_val, max_val], [min_val, max_val], "r--", lw=2, label="Perfect Prediction (y = x)")
             ax.set_xlim(min_val, max_val)
             ax.set_ylim(min_val, max_val)
-            ax.set_xlabel("Actual Life Expectancy (Years)", fontsize=11)
-            ax.set_ylabel("Predicted Life Expectancy (Years)", fontsize=11)
+            ax.set_xlabel(f"Actual {target_label}", fontsize=11)
+            ax.set_ylabel(f"Predicted {target_label}", fontsize=11)
             ax.set_title(f"Actual vs Predicted: {title}", fontsize=12, fontweight="bold")
             ax.legend(loc="upper left")
 
-            # Add R2 and RMSE text
             from sklearn.metrics import r2_score, mean_squared_error
             r2 = r2_score(y_test, y_p)
             rmse = np.sqrt(mean_squared_error(y_test, y_p))
@@ -257,26 +315,32 @@ class Visualizer:
                     bbox=dict(boxstyle="round", facecolor="white", alpha=0.8))
 
         plt.tight_layout()
-        path = os.path.join(self.output_dir, "07_actual_vs_predicted.png")
+        path = os.path.join(self.output_dir, output_name)
         plt.savefig(path, dpi=300)
         plt.close()
         return path
 
-    def plot_residuals_analysis(self, y_true: np.ndarray, y_pred: np.ndarray, model_name: str = "Linear Regression"):
+    def plot_residuals_analysis(
+        self,
+        y_true: np.ndarray,
+        y_pred: np.ndarray,
+        model_name: str = "Linear Regression",
+        output_name: str = "08_residuals_analysis.png"
+    ):
         """4-panel diagnostic plot for the 5 regression assumptions."""
         residuals = y_true - y_pred
-        std_residuals = (residuals - np.mean(residuals)) / np.std(residuals)
+        std_residuals = (residuals - np.mean(residuals)) / (np.std(residuals) if np.std(residuals) > 0 else 1)
 
         fig, axes = plt.subplots(2, 2, figsize=(14, 11))
 
-        # 1. Residuals vs Fitted (Linearity & Homoscedasticity)
+        # 1. Residuals vs Fitted
         axes[0, 0].scatter(y_pred, residuals, alpha=0.5, color="#3498db")
         axes[0, 0].axhline(0, color="red", linestyle="--", lw=2)
         axes[0, 0].set_title("Residuals vs Fitted Values (Homoscedasticity Check)", fontsize=11, fontweight="bold")
         axes[0, 0].set_xlabel("Fitted (Predicted) Values")
         axes[0, 0].set_ylabel("Residuals")
 
-        # 2. Normal Q-Q Plot (Normality of Residuals)
+        # 2. Normal Q-Q Plot
         stats.probplot(residuals, dist="norm", plot=axes[0, 1])
         axes[0, 1].get_lines()[0].set_color("#2c3e50")
         axes[0, 1].get_lines()[1].set_color("#e74c3c")
@@ -290,7 +354,7 @@ class Visualizer:
         axes[1, 0].set_xlabel("Residual Value")
         axes[1, 0].set_ylabel("Count")
 
-        # 4. Scale-Location (Spread-Location: Homoscedasticity)
+        # 4. Scale-Location
         sqrt_abs_std_res = np.sqrt(np.abs(std_residuals))
         axes[1, 1].scatter(y_pred, sqrt_abs_std_res, alpha=0.5, color="#1abc9c")
         axes[1, 1].set_title("Scale-Location Plot (Equal Variance)", fontsize=11, fontweight="bold")
@@ -299,14 +363,21 @@ class Visualizer:
 
         plt.suptitle(f"Regression Diagnostic Plots: {model_name}", fontsize=14, fontweight="bold", y=1.00)
         plt.tight_layout()
-        path = os.path.join(self.output_dir, "08_residuals_analysis.png")
+        path = os.path.join(self.output_dir, output_name)
         plt.savefig(path, dpi=300)
         plt.close()
         return path
 
-    def plot_feature_importance(self, feature_names: List[str], coefficients: np.ndarray, model_name: str = "Linear Regression"):
+    def plot_feature_importance(
+        self,
+        feature_names: List[str],
+        coefficients: np.ndarray,
+        model_name: str = "Linear Regression",
+        target_name: str = "Target",
+        output_name: str = "09_feature_importance.png"
+    ):
         """Plot standardized regression coefficients (effect sizes)."""
-        plt.figure(figsize=(10, 8))
+        plt.figure(figsize=(10, max(6, len(feature_names) * 0.4)))
         df_coef = pd.DataFrame({"Feature": feature_names, "Coefficient": coefficients})
         df_coef["AbsCoef"] = df_coef["Coefficient"].abs()
         df_coef = df_coef.sort_values(by="Coefficient", ascending=True)
@@ -318,16 +389,16 @@ class Visualizer:
         plt.xlabel("Standardized Coefficient (Beta weight)", fontsize=11, fontweight="bold")
         plt.ylabel("Feature", fontsize=11, fontweight="bold")
 
-        # Legend
         from matplotlib.patches import Patch
         legend_elements = [
-            Patch(facecolor="#27ae60", label="Positive Impact (Increases Life Expectancy)"),
-            Patch(facecolor="#e74c3c", label="Negative Impact (Decreases Life Expectancy)")
+            Patch(facecolor="#27ae60", label=f"Positive Impact (Increases {target_name})"),
+            Patch(facecolor="#e74c3c", label=f"Negative Impact (Decreases {target_name})")
         ]
         plt.legend(handles=legend_elements, loc="lower right")
 
         plt.tight_layout()
-        path = os.path.join(self.output_dir, "09_feature_importance.png")
+        path = os.path.join(self.output_dir, output_name)
         plt.savefig(path, dpi=300)
         plt.close()
         return path
+

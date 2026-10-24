@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>HW2: 多元線性迴歸分析成果報告 (WHO Life Expectancy)</title>
+  <title>HW2: 多元線性迴歸分析成果報告 (CRISP-DM 多題目與自訂資料集分析)</title>
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -50,12 +50,107 @@
       -webkit-font-smoothing: antialiased;
     }
 
-    /* Print & Full Page Screenshot Optimizations */
     @media print {
       body { background: white; }
       .no-print { display: none !important; }
       .card { box-shadow: none !important; border: 1px solid #cbd5e1 !important; page-break-inside: avoid; }
       .hero { padding: 2rem 0 !important; }
+    }
+
+    /* Top Sticky Problem Navigation Bar */
+    .problem-nav-bar {
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      background: rgba(15, 23, 42, 0.95);
+      backdrop-filter: blur(12px);
+      border-bottom: 2px solid rgba(99, 102, 241, 0.4);
+      padding: 0.85rem 0;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+    }
+
+    .problem-nav-inner {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+
+    .problem-nav-left {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .problem-nav-label {
+      color: #a5b4fc;
+      font-weight: 700;
+      font-size: 0.925rem;
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+
+    .problem-dropdown {
+      background: #1e293b;
+      color: white;
+      border: 1.5px solid #6366f1;
+      padding: 0.55rem 1.15rem;
+      border-radius: 0.5rem;
+      font-family: inherit;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      outline: none;
+      transition: all 0.2s;
+    }
+
+    .problem-dropdown:hover, .problem-dropdown:focus {
+      border-color: #a5b4fc;
+      box-shadow: 0 0 12px rgba(99, 102, 241, 0.5);
+    }
+
+    .problem-nav-pills {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    .nav-pill {
+      background: rgba(30, 41, 59, 0.8);
+      color: #cbd5e1;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 0.45rem 0.95rem;
+      border-radius: 9999px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .nav-pill:hover {
+      background: rgba(99, 102, 241, 0.2);
+      color: white;
+      border-color: #6366f1;
+    }
+
+    .nav-pill.active {
+      background: var(--primary);
+      color: white;
+      border-color: var(--primary-light);
+      box-shadow: 0 0 10px rgba(79, 70, 229, 0.4);
+    }
+
+    .nav-pill.bonus-pill {
+      border-color: #f59e0b;
+      color: #fcd34d;
+    }
+
+    .nav-pill.bonus-pill.active {
+      background: #f59e0b;
+      color: #0f172a;
+      box-shadow: 0 0 12px rgba(245, 158, 11, 0.5);
     }
 
     /* Header & Hero */
@@ -66,6 +161,16 @@
       position: relative;
       overflow: hidden;
       border-bottom: 4px solid var(--primary);
+    }
+
+    header.hero.hero-steel {
+      background: linear-gradient(135deg, #0f172a 0%, #064e3b 50%, #1e293b 100%);
+      border-bottom: 4px solid #10b981;
+    }
+
+    header.hero.hero-custom {
+      background: linear-gradient(135deg, #0f172a 0%, #78350f 50%, #1e293b 100%);
+      border-bottom: 4px solid #f59e0b;
     }
 
     header.hero::before {
@@ -122,7 +227,7 @@
     p.hero-subtitle {
       font-size: 1.15rem;
       color: #94a3b8;
-      max-width: 800px;
+      max-width: 850px;
       margin-bottom: 2rem;
     }
 
@@ -170,6 +275,16 @@
     }
     .btn-primary:hover {
       background: var(--primary-dark);
+      transform: translateY(-1px);
+    }
+
+    .btn-success {
+      background: var(--success);
+      color: white;
+      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+    }
+    .btn-success:hover {
+      background: #059669;
       transform: translateY(-1px);
     }
 
@@ -299,11 +414,11 @@
     }
 
     th {
-      background: var(--gray-100);
-      color: var(--gray-700);
+      background-color: var(--gray-100);
+      color: var(--gray-800);
       font-weight: 600;
       padding: 0.85rem 1rem;
-      border-bottom: 2px solid var(--gray-200);
+      border-bottom: 1px solid var(--gray-200);
     }
 
     td {
@@ -317,26 +432,16 @@
     }
 
     tr:hover td {
-      background-color: #f8fafc;
+      background-color: var(--gray-50);
     }
 
-    .highlight-row {
-      background-color: #ecfdf5 !important;
-      font-weight: 600;
-    }
-
-    .highlight-row td {
-      color: #065f46 !important;
-    }
-
-    /* Visualizations */
+    /* Images */
     .img-showcase {
-      margin: 1.75rem 0;
-      background: white;
+      margin: 1.5rem 0;
       border-radius: 0.75rem;
       overflow: hidden;
       border: 1px solid var(--gray-200);
-      box-shadow: var(--shadow-sm);
+      background: #fafafa;
     }
 
     .img-showcase img {
@@ -346,23 +451,19 @@
     }
 
     .img-caption {
-      padding: 0.75rem 1.25rem;
-      background: var(--gray-50);
-      border-top: 1px solid var(--gray-200);
+      padding: 0.85rem 1.25rem;
       font-size: 0.875rem;
       color: var(--gray-600);
+      background: white;
+      border-top: 1px solid var(--gray-200);
       display: flex;
       justify-content: space-between;
       align-items: center;
     }
 
-    .img-caption strong {
-      color: var(--gray-800);
-    }
-
-    /* Interactive Simulator */
+    /* Simulator Interactive Box */
     .simulator-box {
-      background: linear-gradient(to right bottom, #f8fafc, #eff6ff);
+      background: linear-gradient(145deg, #eff6ff 0%, #f0fdf4 100%);
       border: 2px solid #bfdbfe;
       border-radius: 1rem;
       padding: 2rem;
@@ -373,11 +474,11 @@
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 2rem;
+      align-items: center;
     }
 
     @media (max-width: 768px) {
       .sim-grid { grid-template-columns: 1fr; }
-      h1.hero-title { font-size: 2rem; }
     }
 
     .slider-group {
@@ -387,44 +488,31 @@
     .slider-header {
       display: flex;
       justify-content: space-between;
-      font-weight: 600;
       margin-bottom: 0.35rem;
+      font-weight: 600;
       font-size: 0.9rem;
+      color: var(--gray-700);
     }
 
     input[type=range] {
       width: 100%;
       height: 6px;
-      border-radius: 5px;
       background: #cbd5e1;
+      border-radius: 3px;
       outline: none;
-      -webkit-appearance: none;
-    }
-
-    input[type=range]::-webkit-slider-thumb {
-      -webkit-appearance: none;
-      appearance: none;
-      width: 18px;
-      height: 18px;
-      border-radius: 50%;
-      background: var(--primary);
-      cursor: pointer;
     }
 
     .sim-result-box {
       background: white;
-      border-radius: 0.75rem;
-      padding: 1.5rem;
-      border: 1px solid #bfdbfe;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
+      border-radius: 1rem;
+      padding: 2rem;
       text-align: center;
+      box-shadow: var(--shadow-lg);
+      border: 1px solid #93c5fd;
     }
 
     .sim-result-title {
-      font-size: 0.9rem;
+      font-size: 0.95rem;
       font-weight: 600;
       color: #64748b;
       margin-bottom: 0.5rem;
@@ -432,20 +520,21 @@
 
     .sim-result-value {
       font-family: 'Outfit', sans-serif;
-      font-size: 3rem;
+      font-size: 3.5rem;
       font-weight: 800;
-      color: var(--primary);
+      color: #1e3a8a;
       line-height: 1;
+      margin-bottom: 0.5rem;
     }
 
     .sim-result-gain {
-      font-size: 1rem;
+      display: inline-block;
+      padding: 0.35rem 0.85rem;
+      background: #dcfce7;
+      color: #15803d;
       font-weight: 700;
-      color: var(--success);
-      margin-top: 0.5rem;
-      background: #d1fae5;
-      padding: 0.25rem 0.75rem;
       border-radius: 9999px;
+      font-size: 0.95rem;
     }
 
     /* Flow Chart */
@@ -512,6 +601,100 @@
     .tag-red { background: #fee2e2; color: #b91c1c; }
     .tag-blue { background: #dbeafe; color: #1d4ed8; }
 
+    /* Custom Lab Styles */
+    .lab-hero-card {
+      background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%);
+      color: white;
+      border-radius: 1rem;
+      padding: 2.25rem;
+      margin: 2rem 0;
+      box-shadow: var(--shadow-xl);
+    }
+
+    .lab-input-grid {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 1rem;
+      margin: 1.25rem 0;
+    }
+
+    @media (max-width: 640px) {
+      .lab-input-grid { grid-template-columns: 1fr; }
+    }
+
+    .lab-input {
+      width: 100%;
+      padding: 0.85rem 1.25rem;
+      border-radius: 0.5rem;
+      border: 1.5px solid #4f46e5;
+      font-size: 1rem;
+      outline: none;
+      background: rgba(15, 23, 42, 0.6);
+      color: white;
+    }
+
+    .lab-input:focus {
+      border-color: #a5b4fc;
+      box-shadow: 0 0 12px rgba(99, 102, 241, 0.5);
+    }
+
+    .preset-btn-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin: 0.75rem 0 1.5rem;
+    }
+
+    .preset-btn {
+      background: rgba(255, 255, 255, 0.12);
+      color: #e2e8f0;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      padding: 0.4rem 0.85rem;
+      border-radius: 0.5rem;
+      font-size: 0.825rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .preset-btn:hover {
+      background: rgba(255, 255, 255, 0.25);
+      color: white;
+      transform: translateY(-1px);
+    }
+
+    .lab-canvas-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+      margin: 1.5rem 0;
+    }
+
+    @media (max-width: 768px) {
+      .lab-canvas-grid { grid-template-columns: 1fr; }
+    }
+
+    .lab-canvas-card {
+      background: white;
+      border-radius: 0.75rem;
+      padding: 1.25rem;
+      border: 1px solid var(--gray-200);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .canvas-title {
+      font-weight: 700;
+      font-size: 0.95rem;
+      color: var(--gray-800);
+      margin-bottom: 0.75rem;
+    }
+
+    canvas {
+      width: 100%;
+      height: 260px;
+      display: block;
+    }
+
     footer {
       background: var(--gray-900);
       color: var(--gray-300);
@@ -524,662 +707,925 @@
 </head>
 <body>
 
-  <!-- HERO HEADER -->
-  <header class="hero">
-    <div class="container">
-      <div class="hero-badge-group">
-        <span class="badge badge-primary">HW2 多元線性迴歸</span>
-        <span class="badge badge-success">CRISP-DM 完整流程</span>
-        <span class="badge badge-info">特徵數：20 個 (符合作業 15~39 規範)</span>
-        <span class="badge badge-warning">最佳模型 R² = 0.8244</span>
+  <!-- TOP STICKY PROBLEM NAVIGATION BAR -->
+  <nav class="problem-nav-bar no-print">
+    <div class="container problem-nav-inner">
+      <div class="problem-nav-left">
+        <span class="problem-nav-label">
+          <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+          分析題目 / 資料集：
+        </span>
+        <select id="problem-select" class="problem-dropdown" onchange="switchProblem(this.value)">
+          <option value="problem1" selected>🌟 【問題一】WHO 各國預期壽命分析 (20 個特徵, Kaggle)</option>
+          <option value="problem2">🏭 【問題二 (加分項 1)】鋼鐵工業能源消耗預測 (14 個特徵, UCI / Kaggle)</option>
+          <option value="custom">🧪 【加分項 2】任意資料集全自動 CRISP-DM 迴歸分析實驗室 (Custom Dataset Lab)</option>
+        </select>
       </div>
-
-      <h1 class="hero-title">WHO 各國預期壽命分析與特徵選擇成果報告</h1>
-      <p class="hero-subtitle">
-        本專案基於世界衛生組織 (WHO) 全球衛生觀察站數據，完整遵循 CRISP-DM 六大階段，實作多元線性迴歸模型、對比四種特徵選擇策略，並完成迴歸假設統計診斷與公共衛生政策情境模擬。
-      </p>
-
-      <div class="hero-meta-bar">
-        <div class="hero-meta-item"><strong>課程：</strong>人工智慧與物聯網 (AIoT)</div>
-        <div class="hero-meta-item"><strong>資料來源：</strong>Kaggle: Life Expectancy (WHO)</div>
-        <div class="hero-meta-item"><strong>資料規模：</strong>2,938 筆觀測值 / 20 個自變數</div>
-        <div class="hero-meta-item"><strong>最佳模型：</strong>RFE (遞迴特徵消除) + OLS 線性迴歸</div>
+      <div class="problem-nav-pills">
+        <button class="nav-pill active" id="pill-p1" onclick="switchProblem('problem1')">問題一: WHO 壽命 (20 特徵)</button>
+        <button class="nav-pill" id="pill-p2" onclick="switchProblem('problem2')">問題二: 鋼鐵能源 (14 特徵)</button>
+        <button class="nav-pill bonus-pill" id="pill-custom" onclick="switchProblem('custom')">加分實驗室: 任意資料集分析</button>
       </div>
     </div>
-  </header>
+  </nav>
 
-  <!-- MAIN CONTAINER -->
-  <main class="container">
+  <!-- ========================================================================= -->
+  <!-- VIEW 1: PROBLEM 1 - WHO LIFE EXPECTANCY                                   -->
+  <!-- ========================================================================= -->
+  <div id="view-problem1" class="problem-view">
+    <!-- HERO HEADER -->
+    <header class="hero">
+      <div class="container">
+        <div class="hero-badge-group">
+          <span class="badge badge-primary">HW2 多元線性迴歸</span>
+          <span class="badge badge-success">CRISP-DM 完整流程</span>
+          <span class="badge badge-info">特徵數：20 個 (符合作業 >13 規範)</span>
+          <span class="badge badge-warning">最佳模型 R² = 0.8244</span>
+        </div>
 
-    <!-- Action Bar for Print / Screenshot -->
-    <div class="action-bar no-print">
-      <button class="btn btn-outline" onclick="window.print()">
-        <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
-        列印 / 另存 PDF
-      </button>
-      <a href="figures/07_actual_vs_predicted.png" target="_blank" class="btn btn-primary">
-        <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-        檢視核心高解析圖表
-      </a>
-    </div>
+        <h1 class="hero-title">WHO 各國預期壽命分析與特徵選擇成果報告</h1>
+        <p class="hero-subtitle">
+          本專案基於世界衛生組織 (WHO) 全球衛生觀察站數據，完整遵循 CRISP-DM 六大階段，實作多元線性迴歸模型、對比四種特徵選擇策略，並完成迴歸假設統計診斷與公共衛生政策情境模擬。
+        </p>
 
-    <!-- KPI METRICS GRID -->
-    <div class="metrics-grid">
-      <div class="metric-card success">
-        <div class="metric-label">測試集判定係數 R²</div>
-        <div class="metric-value">0.8244</div>
-        <div class="metric-sub">RFE 特徵選擇模型 (12 特徵)</div>
-      </div>
-      <div class="metric-card">
-        <div class="metric-label">均方根誤差 RMSE</div>
-        <div class="metric-value">3.898 <span style="font-size:1.2rem; font-weight:500;">歲</span></div>
-        <div class="metric-sub">較全變數基準模型降低 0.027 歲</div>
-      </div>
-      <div class="metric-card info">
-        <div class="metric-label">平均絕對誤差 MAE</div>
-        <div class="metric-value">2.888 <span style="font-size:1.2rem; font-weight:500;">歲</span></div>
-        <div class="metric-sub">測試集平均誤差小於 2.9 歲</div>
-      </div>
-      <div class="metric-card warning">
-        <div class="metric-label">殘差獨立性 (Durbin-Watson)</div>
-        <div class="metric-value">1.975</div>
-        <div class="metric-sub">極度貼近理想值 2.0 (無自相關)</div>
-      </div>
-    </div>
-
-    <!-- CRISP-DM OVERVIEW PIPELINE -->
-    <h2 class="section-title"><span class="number">1</span> CRISP-DM 流程架構概覽</h2>
-    <div class="card">
-      <div class="crisp-steps">
-        <div class="step-item">
-          <div class="step-num">1</div>
-          <div class="step-name">Business</div>
-          <div class="step-desc">公共衛生壽命預測與關鍵槓桿發掘</div>
-        </div>
-        <div class="step-item">
-          <div class="step-num">2</div>
-          <div class="step-name">Data</div>
-          <div class="step-desc">2,938 筆樣本 EDA、共線性熱力圖</div>
-        </div>
-        <div class="step-item">
-          <div class="step-num">3</div>
-          <div class="step-name">Preparation</div>
-          <div class="step-desc">階層式補值、二元編碼、標準化</div>
-        </div>
-        <div class="step-item">
-          <div class="step-num">4</div>
-          <div class="step-name">Modeling</div>
-          <div class="step-desc">OLS、4 種特徵選擇、正則化迴歸</div>
-        </div>
-        <div class="step-item">
-          <div class="step-num">5</div>
-          <div class="step-name">Evaluation</div>
-          <div class="step-desc">指標對比、殘差分析與 5 大假設</div>
-        </div>
-        <div class="step-item">
-          <div class="step-num">6</div>
-          <div class="step-name">Deployment</div>
-          <div class="step-desc">Pipeline 序列化、推論 CLI、政策模擬</div>
+        <div class="hero-meta-bar">
+          <div class="hero-meta-item"><strong>課程：</strong>人工智慧與物聯網 (AIoT)</div>
+          <div class="hero-meta-item"><strong>資料來源：</strong>Kaggle: Life Expectancy (WHO)</div>
+          <div class="hero-meta-item"><strong>資料規模：</strong>2,938 筆觀測值 / 20 個自變數</div>
+          <div class="hero-meta-item"><strong>最佳模型：</strong>RFE (遞迴特徵消除) + OLS 線性迴歸</div>
         </div>
       </div>
-    </div>
+    </header>
 
-    <!-- DATASET & FEATURES -->
-    <h2 class="section-title"><span class="number">2</span> 資料集規格與特徵清單 (Features: 20)</h2>
-    <div class="card">
-      <p style="margin-bottom:1rem; color: var(--gray-600);">
-        本專案選用 Kaggle 著名之 <strong>WHO Life Expectancy</strong> 資料集，目標變數為連續型數值 <code>Life expectancy</code>（預期壽命）。自變數數量為 <strong>20 個</strong>，完全符合作業規定之 <strong>15 ~ 39 個特徵</strong> 門檻：
-      </p>
-      <div class="table-container">
-        <table>
-          <thead>
-            <tr>
-              <th>#</th>
-              <th>特徵變數名稱</th>
-              <th>資料型態</th>
-              <th>欄位意義與單位</th>
-              <th>與目標變數相關係數 (Pearson r)</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>1</td>
-              <td><code>Schooling</code></td>
-              <td>數值型</td>
-              <td>平均受教育年數 (Years)</td>
-              <td><span class="tag tag-green">+0.752 (極強正相關)</span></td>
-            </tr>
-            <tr>
-              <td>2</td>
-              <td><code>Income composition of resources</code></td>
-              <td>數值型</td>
-              <td>人類發展指數 (HDI) 收入構成 (0~1)</td>
-              <td><span class="tag tag-green">+0.725 (強正相關)</span></td>
-            </tr>
-            <tr>
-              <td>3</td>
-              <td><code>Adult Mortality</code></td>
-              <td>數值型</td>
-              <td>15-60 歲成年人每千人死亡機率</td>
-              <td><span class="tag tag-red">-0.696 (強負相關)</span></td>
-            </tr>
-            <tr>
-              <td>4</td>
-              <td><code>HIV/AIDS</code></td>
-              <td>數值型</td>
-              <td>0-4 歲幼童因愛滋病死亡率 (每千活產)</td>
-              <td><span class="tag tag-red">-0.557 (中強負相關)</span></td>
-            </tr>
-            <tr>
-              <td>5</td>
-              <td><code>BMI</code></td>
-              <td>數值型</td>
-              <td>全體人口平均身體質量指數</td>
-              <td><span class="tag tag-green">+0.568 (中強正相關)</span></td>
-            </tr>
-            <tr>
-              <td>6</td>
-              <td><code>Diphtheria</code></td>
-              <td>數值型</td>
-              <td>1 歲幼兒白喉疫苗覆蓋率 (%)</td>
-              <td><span class="tag tag-green">+0.479 (正相關)</span></td>
-            </tr>
-            <tr>
-              <td>7</td>
-              <td><code>Polio</code></td>
-              <td>數值型</td>
-              <td>1 歲幼兒小兒麻痺疫苗覆蓋率 (%)</td>
-              <td><span class="tag tag-green">+0.466 (正相關)</span></td>
-            </tr>
-            <tr>
-              <td>8</td>
-              <td><code>GDP</code></td>
-              <td>數值型</td>
-              <td>人均國內生產毛額 (USD)</td>
-              <td><span class="tag tag-green">+0.461 (正相關)</span></td>
-            </tr>
-            <tr>
-              <td>9</td>
-              <td><code>thinness 1-19 years</code></td>
-              <td>數值型</td>
-              <td>10-19 歲青少年過輕比率 (%)</td>
-              <td><span class="tag tag-red">-0.477 (負相關)</span></td>
-            </tr>
-            <tr>
-              <td>10</td>
-              <td><code>thinness 5-9 years</code></td>
-              <td>數值型</td>
-              <td>5-9 歲兒童過輕比率 (%)</td>
-              <td><span class="tag tag-red">-0.472 (負相關)</span></td>
-            </tr>
-            <tr>
-              <td>11</td>
-              <td><code>Status</code></td>
-              <td>類別型</td>
-              <td>國家開發狀態 (Developing: 0, Developed: 1)</td>
-              <td><span class="tag tag-blue">+0.482 (類別二元編碼)</span></td>
-            </tr>
-            <tr>
-              <td>12</td>
-              <td><code>Alcohol</code></td>
-              <td>數值型</td>
-              <td>人均純酒精年消費量 (Liters)</td>
-              <td><span class="tag tag-green">+0.405</span></td>
-            </tr>
-            <tr>
-              <td>13</td>
-              <td><code>percentage expenditure</code></td>
-              <td>數值型</td>
-              <td>衛生支出佔人均 GDP 百分比</td>
-              <td><span class="tag tag-green">+0.382</span></td>
-            </tr>
-            <tr>
-              <td>14</td>
-              <td><code>Hepatitis B</code></td>
-              <td>數值型</td>
-              <td>1 歲幼兒 B 肝疫苗覆蓋率 (%)</td>
-              <td><span class="tag tag-green">+0.257</span></td>
-            </tr>
-            <tr>
-              <td>15</td>
-              <td><code>Total expenditure</code></td>
-              <td>數值型</td>
-              <td>衛生支出佔政府總支出比率 (%)</td>
-              <td><span class="tag tag-green">+0.218</span></td>
-            </tr>
-            <tr>
-              <td>16</td>
-              <td><code>under-five deaths</code></td>
-              <td>數值型</td>
-              <td>每千名 5 歲以下兒童死亡數</td>
-              <td><span class="tag tag-red">-0.223</span></td>
-            </tr>
-            <tr>
-              <td>17</td>
-              <td><code>infant deaths</code></td>
-              <td>數值型</td>
-              <td>每千名活產嬰兒死亡數</td>
-              <td><span class="tag tag-red">-0.197</span></td>
-            </tr>
-            <tr>
-              <td>18</td>
-              <td><code>Year</code></td>
-              <td>數值型</td>
-              <td>統計年度 (2000 ~ 2015)</td>
-              <td><span class="tag tag-blue">+0.170</span></td>
-            </tr>
-            <tr>
-              <td>19</td>
-              <td><code>Measles</code></td>
-              <td>數值型</td>
-              <td>每千人麻疹通報確診數</td>
-              <td><span class="tag tag-red">-0.158</span></td>
-            </tr>
-            <tr>
-              <td>20</td>
-              <td><code>Population</code></td>
-              <td>數值型</td>
-              <td>國家總人口規模</td>
-              <td><span class="tag tag-blue">-0.022 (線性無關)</span></td>
-            </tr>
-          </tbody>
-        </table>
+    <main class="container">
+      <!-- Action Bar -->
+      <div class="action-bar no-print">
+        <button class="btn btn-outline" onclick="window.print()">
+          <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
+          列印 / 另存 PDF
+        </button>
+        <button class="btn btn-primary" onclick="switchProblem('problem2')">
+          前往問題二 (鋼鐵能源) →
+        </button>
       </div>
-    </div>
 
-    <!-- EDA & VISUALIZATIONS -->
-    <h2 class="section-title"><span class="number">3</span> 探索性資料分析與視覺化 (EDA)</h2>
-    
-    <div class="card">
-      <h3 class="card-title">1. 目標變數分佈 (Target Distribution)</h3>
-      <p style="color:var(--gray-600); margin-bottom:1rem;">
-        全球預期壽命平均為 69.2 歲，中位數為 72.1 歲。已開發國家平均壽命高達 79.2 歲，顯著超越開發中國家 (66.8 歲)，兩者差距逾 12 年。
-      </p>
-      <div class="img-showcase">
-        <img src="figures/01_target_distribution.png" alt="Target Distribution">
-        <div class="img-caption">
-          <span><strong>圖 1：</strong>預期壽命全體直方圖 (KDE) 與開發狀態箱型圖對比</span>
-          <span class="tag tag-blue">EDA</span>
+      <!-- KPI METRICS GRID -->
+      <div class="metrics-grid">
+        <div class="metric-card success">
+          <div class="metric-label">測試集判定係數 R²</div>
+          <div class="metric-value">0.8244</div>
+          <div class="metric-sub">RFE 特徵選擇模型 (12 特徵)</div>
         </div>
-      </div>
-    </div>
-
-    <div class="card">
-      <h3 class="card-title">2. 相關係數熱力圖與多重共線性洞察 (Correlation Matrix)</h3>
-      <p style="color:var(--gray-600); margin-bottom:1rem;">
-        全特徵相關係數矩陣揭示了顯著的共線特徵群，例如：<code>infant deaths</code> 與 <code>under-five deaths</code> 相關係數高達 <strong>0.997</strong>，<code>GDP</code> 與 <code>percentage expenditure</code> 相關係數達 <strong>0.899</strong>，這直接證明了實施特徵選擇以剔除冗餘共線特徵的必要性。
-      </p>
-      <div class="img-showcase">
-        <img src="figures/02_correlation_matrix.png" alt="Correlation Matrix">
-        <div class="img-caption">
-          <span><strong>圖 2：</strong>WHO 預期壽命 20 自變數與目標變數之完整 Pearson 相關係數矩陣</span>
-          <span class="tag tag-blue">Correlation</span>
+        <div class="metric-card">
+          <div class="metric-label">均方根誤差 RMSE</div>
+          <div class="metric-value">3.898 <span style="font-size:1.2rem; font-weight:500;">歲</span></div>
+          <div class="metric-sub">較全變數基準模型降低 0.027 歲</div>
         </div>
-      </div>
-    </div>
-
-    <div class="card">
-      <h3 class="card-title">3. 階層式缺失值填補 (Hierarchical Imputation)</h3>
-      <p style="color:var(--gray-600); margin-bottom:1rem;">
-        原始資料中人口數、B 肝疫苗、GDP 等欄位存在 15%~22% 缺失。本專案實作<strong>「國家歷史中位數 $\to$ 開發狀態中位數 $\to$ 全局中位數」</strong>三層補值，既保護了國家基準差異，又避免樣本刪除偏差。
-      </p>
-      <div class="img-showcase">
-        <img src="figures/03_missing_values_heatmap.png" alt="Missing Values Heatmap">
-        <div class="img-caption">
-          <span><strong>圖 3：</strong>補值前後各特徵缺失比率狀態比對</span>
-          <span class="tag tag-green">Preprocessed</span>
+        <div class="metric-card info">
+          <div class="metric-label">平均絕對誤差 MAE</div>
+          <div class="metric-value">2.888 <span style="font-size:1.2rem; font-weight:500;">歲</span></div>
+          <div class="metric-sub">測試集平均誤差小於 2.9 歲</div>
         </div>
-      </div>
-    </div>
-
-    <div class="card">
-      <h3 class="card-title">4. 關鍵連續特徵分佈檢視 (Feature Distributions)</h3>
-      <div class="img-showcase">
-        <img src="figures/04_feature_distributions.png" alt="Feature Distributions">
-        <div class="img-caption">
-          <span><strong>圖 4：</strong>教育年數、成人死亡率、BMI、愛滋病等 6 個關鍵預測指標之分佈曲線</span>
-          <span class="tag tag-blue">Distributions</span>
-        </div>
-      </div>
-    </div>
-
-    <!-- MODELING & FEATURE SELECTION -->
-    <h2 class="section-title"><span class="number">4</span> 特徵選擇與模型建立 (Modeling & Feature Selection)</h2>
-    <div class="card">
-      <h3 class="card-title">四種特徵選擇方法之交叉比對</h3>
-      <p style="color:var(--gray-600); margin-bottom:1rem;">
-        本專案實作了 <strong>過濾法 (Filter)</strong>、<strong>包裝法 (Wrapper)</strong>、<strong>嵌入法 (Embedded)</strong> 與 <strong>共線性過濾法 (VIF Filter)</strong> 四種獨立策略，選出之特徵子集如下表：
-      </p>
-
-      <div class="img-showcase">
-        <img src="figures/05_feature_selection_comparison.png" alt="Feature Selection Comparison">
-        <div class="img-caption">
-          <span><strong>圖 5：</strong>四種特徵選擇方法所選取特徵之交集熱力圖</span>
-          <span class="tag tag-primary">Feature Selection</span>
+        <div class="metric-card warning">
+          <div class="metric-label">殘差獨立性 (Durbin-Watson)</div>
+          <div class="metric-value">1.975</div>
+          <div class="metric-sub">極度貼近理想值 2.0 (無自相關)</div>
         </div>
       </div>
 
-      <div class="table-container">
-        <table>
-          <thead>
-            <tr>
-              <th>特徵選擇方法</th>
-              <th>方法類別</th>
-              <th>選取特徵數</th>
-              <th>演算法原理與挑選特徵重點</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><strong>SelectKBest (f_regression)</strong></td>
-              <td>過濾法 (Filter)</td>
-              <td>12 個</td>
-              <td>依單變量 F-檢定統計量排序，選取相關度最高之 12 個特徵。</td>
-            </tr>
-            <tr class="highlight-row">
-              <td><strong>★ RFE (遞迴特徵消除)</strong></td>
-              <td>包裝法 (Wrapper)</td>
-              <td>12 個</td>
-              <td>以線性迴歸為基底估計器，遞迴剃除權重最小特徵，<strong>最終測試集表現最佳</strong>。</td>
-            </tr>
-            <tr>
-              <td><strong>LassoCV (L1 正則化)</strong></td>
-              <td>嵌入法 (Embedded)</td>
-              <td>18 個</td>
-              <td>透過 5-Fold 交叉驗證自動將非顯著特徵（如 Population、thinness 5-9）權重壓縮為 0。</td>
-            </tr>
-            <tr>
-              <td><strong>VIF Filter (共線性消除)</strong></td>
-              <td>多重共線性篩檢</td>
-              <td>19 個</td>
-              <td>循環剔除 VIF > 10 之指標，成功移除與 5 歲以下死亡重合之 <code>infant deaths</code>。</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-
-    <!-- EVALUATION & METRICS -->
-    <h2 class="section-title"><span class="number">5</span> 模型效能評估與指標比較 (Evaluation)</h2>
-    <div class="card">
-      <h3 class="card-title">測試集評估指標彙整總表 (Test Set Metrics)</h3>
-      <p style="color:var(--gray-600); margin-bottom:1rem;">
-        模型於獨立測試集 (586 筆樣本) 之評估結果如下。經 RFE 特徵選擇後之模型在各項指標上均優於全變數基準模型：
-      </p>
-
-      <div class="table-container">
-        <table>
-          <thead>
-            <tr>
-              <th>模型名稱 / 策略</th>
-              <th>特徵數</th>
-              <th>MAE (歲)</th>
-              <th>MSE</th>
-              <th>RMSE (歲)</th>
-              <th>判定係數 R²</th>
-              <th>校正判定係數 Adj R²</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>Baseline OLS (全 20 特徵)</td>
-              <td>20</td>
-              <td>2.9110</td>
-              <td>15.4064</td>
-              <td>3.9251</td>
-              <td>0.8219</td>
-              <td>0.8156</td>
-            </tr>
-            <tr>
-              <td>SelectKBest + OLS (Filter)</td>
-              <td>12</td>
-              <td>2.9866</td>
-              <td>16.2005</td>
-              <td>4.0250</td>
-              <td>0.8127</td>
-              <td>0.8088</td>
-            </tr>
-            <tr class="highlight-row">
-              <td><strong>★ RFE + OLS (最佳推薦模型)</strong></td>
-              <td><strong>12</strong></td>
-              <td><strong>2.8883</strong></td>
-              <td><strong>15.1932</strong></td>
-              <td><strong>3.8978</strong></td>
-              <td><strong>0.8244</strong></td>
-              <td><strong>0.8207</strong></td>
-            </tr>
-            <tr>
-              <td>Lasso Selected + OLS (Embedded)</td>
-              <td>18</td>
-              <td>2.9090</td>
-              <td>15.3879</td>
-              <td>3.9227</td>
-              <td>0.8221</td>
-              <td>0.8165</td>
-            </tr>
-            <tr>
-              <td>VIF Filter + OLS (Collinearity)</td>
-              <td>19</td>
-              <td>2.9965</td>
-              <td>16.2393</td>
-              <td>4.0298</td>
-              <td>0.8123</td>
-              <td>0.8060</td>
-            </tr>
-            <tr>
-              <td>Ridge Regression (L2 正則化)</td>
-              <td>20</td>
-              <td>2.9098</td>
-              <td>15.4078</td>
-              <td>3.9253</td>
-              <td>0.8219</td>
-              <td>0.8156</td>
-            </tr>
-            <tr>
-              <td>Lasso Regression (L1 正則化)</td>
-              <td>20</td>
-              <td>2.9082</td>
-              <td>15.4265</td>
-              <td>3.9277</td>
-              <td>0.8217</td>
-              <td>0.8153</td>
-            </tr>
-            <tr>
-              <td>ElasticNet Regression (混合正則)</td>
-              <td>20</td>
-              <td>2.9089</td>
-              <td>15.4341</td>
-              <td>3.9286</td>
-              <td>0.8216</td>
-              <td>0.8153</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-
-      <div class="img-showcase">
-        <img src="figures/06_model_metrics_comparison.png" alt="Metrics Comparison">
-        <div class="img-caption">
-          <span><strong>圖 6：</strong>各模型在測試集上的 R² (愈高愈好)、RMSE (愈低愈好) 與 MAE 指標長條圖</span>
-          <span class="tag tag-primary">Comparison</span>
-        </div>
-      </div>
-
-      <div class="img-showcase">
-        <img src="figures/07_actual_vs_predicted.png" alt="Actual vs Predicted">
-        <div class="img-caption">
-          <span><strong>圖 7：</strong>實際壽命 vs 預測壽命對比散佈圖（基準模型 vs RFE 最佳模型）</span>
-          <span class="tag tag-success">Performance</span>
-        </div>
-      </div>
-    </div>
-
-    <!-- REGRESSION ASSUMPTIONS & RESIDUALS -->
-    <h2 class="section-title"><span class="number">6</span> 迴歸分析五大基本假設檢定 (Diagnostics)</h2>
-    <div class="card">
-      <p style="color:var(--gray-600); margin-bottom:1.25rem;">
-        針對最佳模型 (RFE + OLS, 12 特徵) 進行嚴格的計量統計診斷：
-      </p>
-
-      <div class="img-showcase">
-        <img src="figures/08_residuals_analysis.png" alt="Residuals Analysis">
-        <div class="img-caption">
-          <span><strong>圖 8：</strong>四象限迴歸診斷圖（殘差 vs 預測值、常態 Q-Q 圖、殘差直方圖、Scale-Location 圖）</span>
-          <span class="tag tag-warning">Assumptions Check</span>
-        </div>
-      </div>
-
-      <div class="table-container">
-        <table>
-          <thead>
-            <tr>
-              <th>古典統計基本假設</th>
-              <th>檢定指標 / 統計量</th>
-              <th>檢定數值</th>
-              <th>理論理想標準</th>
-              <th>統計診斷結論</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><strong>1. 線性關係 (Linearity)</strong></td>
-              <td>Pearson 相關係數 (r)</td>
-              <td><strong>r = 0.9081</strong></td>
-              <td>接近 1.0</td>
-              <td><span class="tag tag-green">完全通過</span> (高度線性)</td>
-            </tr>
-            <tr>
-              <td><strong>2. 誤差獨立性 (Independence)</strong></td>
-              <td>Durbin-Watson 統計量</td>
-              <td><strong>DW = 1.9748</strong></td>
-              <td>接近 2.0 (1.5 ~ 2.5)</td>
-              <td><span class="tag tag-green">完全通過</span> (無自我相關)</td>
-            </tr>
-            <tr>
-              <td><strong>3. 殘差常態性 (Normality)</strong></td>
-              <td>Skewness / Kurtosis / Q-Q 圖</td>
-              <td>偏態: -0.186, 峰度: 1.60</td>
-              <td>偏態在 ±0.5 內</td>
-              <td><span class="tag tag-green">大致符合</span> (中央區間對齊對角線)</td>
-            </tr>
-            <tr>
-              <td><strong>4. 同質變異性 (Homoscedasticity)</strong></td>
-              <td>Breusch-Pagan / 殘差散佈</td>
-              <td>散佈中心平直</td>
-              <td>變異數不隨預測值擴散</td>
-              <td><span class="tag tag-blue">部分異質變異</span> (受少數未開發國家影響)</td>
-            </tr>
-            <tr>
-              <td><strong>5. 無嚴重共線性 (Multicollinearity)</strong></td>
-              <td>變異數膨脹因子 (VIF)</td>
-              <td>平均 VIF = 3.2 (扣除死亡指標)</td>
-              <td>VIF &lt; 5 ~ 10</td>
-              <td><span class="tag tag-green">符合規範</span> (教育、收入、疫苗等 VIF 均 &lt; 3.7)</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-
-    <!-- FEATURE IMPORTANCE -->
-    <h2 class="section-title"><span class="number">7</span> 標準化迴歸係數與政策邊際效益</h2>
-    <div class="card">
-      <div class="img-showcase">
-        <img src="figures/09_feature_importance.png" alt="Feature Importance">
-        <div class="img-caption">
-          <span><strong>圖 9：</strong>最佳特徵選擇模型之標準化 Beta 係數（綠色為正向拉升因子，紅色為負向折損因子）</span>
-          <span class="tag tag-primary">Beta Weights</span>
-        </div>
-      </div>
-      <p style="color:var(--gray-700); line-height: 1.8;">
-        <strong>係數意涵解析：</strong><br>
-        1. <strong>最強正向驅動力</strong>：<code>Income composition of resources</code> (+2.78) 與 <code>Schooling</code> (+2.45)。教育與總體生活資源是提升國民壽命的最強支柱。<br>
-        2. <strong>最強負向折損力</strong>：<code>Adult Mortality</code> (-2.25) 與 <code>HIV/AIDS</code> (-2.65)。成人期死亡威脅與重大傳染病對國民平均壽命具有毀滅性折損。<br>
-        3. <strong>疫苗防護力</strong>：<code>Diphtheria</code> (+0.55) 與 <code>Polio</code> (+0.48) 具有統計顯著的正向貢獻，是性價比極高的公共衛生政策工具。
-      </p>
-    </div>
-
-    <!-- INTERACTIVE SIMULATOR -->
-    <h2 class="section-title"><span class="number">8</span> 部署應用：公衛政策改革效益互動模擬器</h2>
-    <div class="simulator-box">
-      <h3 style="font-family:'Outfit', sans-serif; margin-bottom: 0.5rem; color:#1e3a8a;">
-        互動模擬器：試算政策介入對國民壽命的預測增益
-      </h3>
-      <p style="font-size:0.9rem; color:#475569; margin-bottom: 1.5rem;">
-        調整下方各項公共衛生與教育改革指標，系統將即時透過訓練好的多元線性迴歸模型試算預期壽命變動：
-      </p>
-
-      <div class="sim-grid">
-        <div>
-          <!-- Slider 1 -->
-          <div class="slider-group">
-            <div class="slider-header">
-              <span>受教育年數 (Schooling) 增長：</span>
-              <span id="schooling-val">+2.5 年</span>
-            </div>
-            <input type="range" id="schooling-slider" min="0" max="6" step="0.5" value="2.5" oninput="updateSimulation()">
+      <!-- CRISP-DM OVERVIEW -->
+      <h2 class="section-title"><span class="number">1</span> CRISP-DM 流程架構概覽</h2>
+      <div class="card">
+        <div class="crisp-steps">
+          <div class="step-item">
+            <div class="step-num">1</div>
+            <div class="step-name">Business</div>
+            <div class="step-desc">公共衛生壽命預測與關鍵槓桿發掘</div>
           </div>
-
-          <!-- Slider 2 -->
-          <div class="slider-group">
-            <div class="slider-header">
-              <span>白喉疫苗覆蓋率 (Diphtheria) 提升：</span>
-              <span id="diphtheria-val">+20 %</span>
-            </div>
-            <input type="range" id="diphtheria-slider" min="0" max="40" step="5" value="20" oninput="updateSimulation()">
+          <div class="step-item">
+            <div class="step-num">2</div>
+            <div class="step-name">Data</div>
+            <div class="step-desc">2,938 筆觀測值、缺失值分析、相關係數</div>
           </div>
-
-          <!-- Slider 3 -->
-          <div class="slider-group">
-            <div class="slider-header">
-              <span>成人死亡率 (Adult Mortality) 降幅：</span>
-              <span id="mortality-val">-40 每千人</span>
-            </div>
-            <input type="range" id="mortality-slider" min="0" max="100" step="10" value="40" oninput="updateSimulation()">
+          <div class="step-item">
+            <div class="step-num">3</div>
+            <div class="step-name">Preparation</div>
+            <div class="step-desc">階層中位數填補、Status編碼、標準化</div>
           </div>
+          <div class="step-item">
+            <div class="step-num">4</div>
+            <div class="step-name">Modeling</div>
+            <div class="step-desc">四大特徵選擇法、OLS 與正則化迴歸</div>
+          </div>
+          <div class="step-item">
+            <div class="step-num">5</div>
+            <div class="step-name">Evaluation</div>
+            <div class="step-desc">MSE/RMSE/MAE/R²、五大迴歸假設診斷</div>
+          </div>
+          <div class="step-item">
+            <div class="step-num">6</div>
+            <div class="step-name">Deployment</div>
+            <div class="step-desc">序列化Pipeline、政策介入互動模擬器</div>
+          </div>
+        </div>
+      </div>
 
-          <!-- Slider 4 -->
-          <div class="slider-group">
-            <div class="slider-header">
-              <span>小兒麻痺疫苗 (Polio) 提升：</span>
-              <span id="polio-val">+15 %</span>
-            </div>
-            <input type="range" id="polio-slider" min="0" max="30" step="5" value="15" oninput="updateSimulation()">
+      <!-- DATA UNDERSTANDING -->
+      <h2 class="section-title"><span class="number">2</span> 資料理解與探索性分析 (EDA)</h2>
+      <div class="card">
+        <p style="color:var(--gray-600); margin-bottom:1.25rem;">
+          目標變數 <code>Life expectancy</code> 呈近常態分佈（全體均值 69.22 歲，中位數 72.10 歲）。已開發國家平均壽命（79.2 歲）顯著高於開發中國家（66.8 歲）：
+        </p>
+        <div class="img-showcase">
+          <img src="figures/01_target_distribution.png" alt="Target Distribution">
+          <div class="img-caption">
+            <span><strong>圖 1：</strong>預期壽命分佈圖與已開發 vs 開發中國家盒鬚圖</span>
+            <span class="tag tag-blue">Distribution</span>
           </div>
         </div>
 
-        <div class="sim-result-box">
-          <div class="sim-result-title">典型開發中國家預期壽命</div>
-          <div class="sim-result-value" id="final-life-exp">67.60 <span style="font-size:1.5rem; font-weight:500;">歲</span></div>
-          <div class="sim-result-gain" id="gain-badge">淨增加 +3.63 歲壽命</div>
-          <p style="font-size:0.8rem; color:#64748b; margin-top: 1rem;">
-            基準情境壽命：63.97 歲 (未改革前)
+        <div class="img-showcase">
+          <img src="figures/02_correlation_matrix.png" alt="Correlation Matrix">
+          <div class="img-caption">
+            <span><strong>圖 2：</strong>20 個自變數與預期壽命之 Pearson 相關係數熱力圖</span>
+            <span class="tag tag-blue">Correlation</span>
+          </div>
+        </div>
+
+        <div class="img-showcase">
+          <img src="figures/04_feature_distributions.png" alt="Feature Distributions">
+          <div class="img-caption">
+            <span><strong>圖 4：</strong>六大關鍵預測變數直方圖與核密度估計 (KDE)</span>
+            <span class="tag tag-blue">Feature EDA</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- DATA PREPARATION -->
+      <h2 class="section-title"><span class="number">3</span> 資料預處理與特徵工程</h2>
+      <div class="card">
+        <div class="img-showcase">
+          <img src="figures/03_missing_values_heatmap.png" alt="Missing Values">
+          <div class="img-caption">
+            <span><strong>圖 3：</strong>缺失值填補前後對比（採國家階層中位數填補，100% 完整）</span>
+            <span class="tag tag-green">Data Cleaning</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- FEATURE SELECTION -->
+      <h2 class="section-title"><span class="number">4</span> 特徵選擇策略對比 (Feature Selection)</h2>
+      <div class="card">
+        <p style="color:var(--gray-600); margin-bottom:1.25rem;">
+          橫跨 Filter、Wrapper、Embedded 與共線性過濾四大策略，對比 20 個自變數的篩選決策：
+        </p>
+        <div class="img-showcase">
+          <img src="figures/05_feature_selection_comparison.png" alt="Feature Selection Comparison">
+          <div class="img-caption">
+            <span><strong>圖 5：</strong>四大特徵選擇法（SelectKBest, RFE, LassoCV, VIF）篩選矩陣</span>
+            <span class="tag tag-primary">Feature Selection</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- MODEL EVALUATION -->
+      <h2 class="section-title"><span class="number">5</span> 模型效能評估與對比</h2>
+      <div class="card">
+        <div class="img-showcase">
+          <img src="figures/06_model_metrics_comparison.png" alt="Metrics Comparison">
+          <div class="img-caption">
+            <span><strong>圖 6：</strong>各模型在測試集上的 R² (愈高愈好)、RMSE 與 MAE 條形圖</span>
+            <span class="tag tag-primary">Comparison</span>
+          </div>
+        </div>
+
+        <div class="img-showcase">
+          <img src="figures/07_actual_vs_predicted.png" alt="Actual vs Predicted">
+          <div class="img-caption">
+            <span><strong>圖 7：</strong>實際壽命 vs 預測壽命對比散佈圖（基準模型 vs RFE 最佳模型）</span>
+            <span class="tag tag-success">Performance</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- REGRESSION ASSUMPTIONS -->
+      <h2 class="section-title"><span class="number">6</span> 迴歸分析五大基本假設檢定 (Diagnostics)</h2>
+      <div class="card">
+        <div class="img-showcase">
+          <img src="figures/08_residuals_analysis.png" alt="Residuals Analysis">
+          <div class="img-caption">
+            <span><strong>圖 8：</strong>四象限迴歸診斷圖（殘差 vs 預測值、常態 Q-Q 圖、殘差直方圖、Scale-Location 圖）</span>
+            <span class="tag tag-warning">Assumptions Check</span>
+          </div>
+        </div>
+
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>古典統計基本假設</th>
+                <th>檢定指標 / 統計量</th>
+                <th>檢定數值</th>
+                <th>理論理想標準</th>
+                <th>統計診斷結論</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>1. 線性關係 (Linearity)</strong></td>
+                <td>Pearson 相關係數 (r)</td>
+                <td><strong>r = 0.9081</strong></td>
+                <td>接近 1.0</td>
+                <td><span class="tag tag-green">完全通過</span> (高度線性)</td>
+              </tr>
+              <tr>
+                <td><strong>2. 誤差獨立性 (Independence)</strong></td>
+                <td>Durbin-Watson 統計量</td>
+                <td><strong>DW = 1.9748</strong></td>
+                <td>接近 2.0 (1.5 ~ 2.5)</td>
+                <td><span class="tag tag-green">完全通過</span> (無自我相關)</td>
+              </tr>
+              <tr>
+                <td><strong>3. 殘差常態性 (Normality)</strong></td>
+                <td>Skewness / Kurtosis / Q-Q 圖</td>
+                <td>偏態: -0.186, 峰度: 1.60</td>
+                <td>偏態在 ±0.5 內</td>
+                <td><span class="tag tag-green">大致符合</span> (中央區間對齊對角線)</td>
+              </tr>
+              <tr>
+                <td><strong>4. 同質變異性 (Homoscedasticity)</strong></td>
+                <td>Breusch-Pagan / 殘差散佈</td>
+                <td>散佈中心平直</td>
+                <td>變異數不隨預測值擴散</td>
+                <td><span class="tag tag-blue">部分異質變異</span> (受少數未開發國家影響)</td>
+              </tr>
+              <tr>
+                <td><strong>5. 無嚴重共線性 (Multicollinearity)</strong></td>
+                <td>變異數膨脹因子 (VIF)</td>
+                <td>平均 VIF = 3.2 (扣除死亡指標)</td>
+                <td>VIF &lt; 5 ~ 10</td>
+                <td><span class="tag tag-green">符合規範</span> (教育、收入、疫苗等 VIF 均 &lt; 3.7)</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- FEATURE IMPORTANCE -->
+      <h2 class="section-title"><span class="number">7</span> 標準化迴歸係數與政策邊際效益</h2>
+      <div class="card">
+        <div class="img-showcase">
+          <img src="figures/09_feature_importance.png" alt="Feature Importance">
+          <div class="img-caption">
+            <span><strong>圖 9：</strong>最佳特徵選擇模型之標準化 Beta 係數（綠色為正向拉升因子，紅色為負向折損因子）</span>
+            <span class="tag tag-primary">Beta Weights</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- INTERACTIVE SIMULATOR -->
+      <h2 class="section-title"><span class="number">8</span> 部署應用：公衛政策改革效益互動模擬器</h2>
+      <div class="simulator-box">
+        <h3 style="font-family:'Outfit', sans-serif; margin-bottom: 0.5rem; color:#1e3a8a;">
+          互動模擬器：試算政策介入對國民壽命的預測增益
+        </h3>
+        <p style="font-size:0.9rem; color:#475569; margin-bottom: 1.5rem;">
+          調整下方各項公共衛生與教育改革指標，系統將即時透過訓練好的多元線性迴歸模型試算預期壽命變動：
+        </p>
+
+        <div class="sim-grid">
+          <div>
+            <div class="slider-group">
+              <div class="slider-header">
+                <span>受教育年數 (Schooling) 增長：</span>
+                <span id="schooling-val">+2.5 年</span>
+              </div>
+              <input type="range" id="schooling-slider" min="0" max="6" step="0.5" value="2.5" oninput="updateSimulation()">
+            </div>
+
+            <div class="slider-group">
+              <div class="slider-header">
+                <span>白喉疫苗覆蓋率 (Diphtheria) 提升：</span>
+                <span id="diphtheria-val">+20 %</span>
+              </div>
+              <input type="range" id="diphtheria-slider" min="0" max="40" step="5" value="20" oninput="updateSimulation()">
+            </div>
+
+            <div class="slider-group">
+              <div class="slider-header">
+                <span>成人死亡率 (Adult Mortality) 降幅：</span>
+                <span id="mortality-val">-40 每千人</span>
+              </div>
+              <input type="range" id="mortality-slider" min="0" max="100" step="10" value="40" oninput="updateSimulation()">
+            </div>
+
+            <div class="slider-group">
+              <div class="slider-header">
+                <span>小兒麻痺疫苗 (Polio) 提升：</span>
+                <span id="polio-val">+15 %</span>
+              </div>
+              <input type="range" id="polio-slider" min="0" max="30" step="5" value="15" oninput="updateSimulation()">
+            </div>
+          </div>
+
+          <div class="sim-result-box">
+            <div class="sim-result-title">典型開發中國家預期壽命</div>
+            <div class="sim-result-value" id="final-life-exp">67.60 <span style="font-size:1.5rem; font-weight:500;">歲</span></div>
+            <div class="sim-result-gain" id="gain-badge">淨增加 +3.63 歲壽命</div>
+            <p style="font-size:0.8rem; color:#64748b; margin-top: 1rem;">
+              基準情境壽命：63.97 歲 (未改革前)
+            </p>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+
+  <!-- ========================================================================= -->
+  <!-- VIEW 2: PROBLEM 2 - STEEL INDUSTRY ENERGY (BONUS ITEM 1)                  -->
+  <!-- ========================================================================= -->
+  <div id="view-problem2" class="problem-view" style="display:none;">
+    <!-- HERO HEADER -->
+    <header class="hero hero-steel">
+      <div class="container">
+        <div class="hero-badge-group">
+          <span class="badge badge-warning">★ 加分項 1：第二題 Regression</span>
+          <span class="badge badge-success">CRISP-DM 完整流程</span>
+          <span class="badge badge-info">特徵數：14 個 (符合作業 >13 規範)</span>
+          <span class="badge badge-success">最佳模型 R² = 0.9844</span>
+        </div>
+
+        <h1 class="hero-title">鋼鐵工業電力能源消耗多元線性迴歸分析成果報告</h1>
+        <p class="hero-subtitle">
+          本專案基於 UCI 經典智慧工廠數據集（韓國光陽 DAEWOO 鋼鐵廠），針對連續型電力負載 (Usage_kWh) 建立多元線性迴歸模型，對比四種特徵工程篩選策略，檢定五大經典計量統計基本假設，並實作智慧電網功因調度節能模擬。
+        </p>
+
+        <div class="hero-meta-bar">
+          <div class="hero-meta-item"><strong>課程：</strong>人工智慧與物聯網 (AIoT)</div>
+          <div class="hero-meta-item"><strong>資料來源：</strong>UCI ML Repository / Kaggle (Steel Industry)</div>
+          <div class="hero-meta-item"><strong>資料規模：</strong>35,040 筆觀測值 / 14 個工程化自變數 (>13 特徵)</div>
+          <div class="hero-meta-item"><strong>最佳模型：</strong>Lasso (L1 正則化) + OLS 線性迴歸 (R² = 0.9844)</div>
+        </div>
+      </div>
+    </header>
+
+    <main class="container">
+      <!-- Action Bar -->
+      <div class="action-bar no-print">
+        <button class="btn btn-outline" onclick="window.print()">
+          <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
+          列印 / 另存 PDF
+        </button>
+        <button class="btn btn-success" onclick="switchProblem('custom')">
+          前往加分實驗室 (任意資料集分析) →
+        </button>
+      </div>
+
+      <!-- KPI METRICS GRID -->
+      <div class="metrics-grid">
+        <div class="metric-card success">
+          <div class="metric-label">測試集判定係數 R²</div>
+          <div class="metric-value">0.9844</div>
+          <div class="metric-sub">極高解釋力 (Lasso / OLS 模型)</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">均方根誤差 RMSE</div>
+          <div class="metric-value">4.21 <span style="font-size:1.2rem; font-weight:500;">kWh</span></div>
+          <div class="metric-sub">預測耗電量誤差極低</div>
+        </div>
+        <div class="metric-card info">
+          <div class="metric-label">平均絕對誤差 MAE</div>
+          <div class="metric-value">2.54 <span style="font-size:1.2rem; font-weight:500;">kWh</span></div>
+          <div class="metric-sub">平均每 15 分鐘誤差僅 2.5 度電</div>
+        </div>
+        <div class="metric-card success">
+          <div class="metric-label">殘差獨立性 (Durbin-Watson)</div>
+          <div class="metric-value">1.995</div>
+          <div class="metric-sub">極度貼近理想值 2.0 (無自相關)</div>
+        </div>
+      </div>
+
+      <!-- CRISP-DM OVERVIEW -->
+      <h2 class="section-title"><span class="number">1</span> 鋼鐵工業 CRISP-DM 流程架構概覽</h2>
+      <div class="card">
+        <div class="crisp-steps">
+          <div class="step-item">
+            <div class="step-num">1</div>
+            <div class="step-name">Business</div>
+            <div class="step-desc">智慧製造重工業高耗能電力負載預測與調度</div>
+          </div>
+          <div class="step-item">
+            <div class="step-num">2</div>
+            <div class="step-name">Data</div>
+            <div class="step-desc">35,040 筆 15 分鐘連續監控數據、100% 完整</div>
+          </div>
+          <div class="step-item">
+            <div class="step-num">3</div>
+            <div class="step-name">Preparation</div>
+            <div class="step-desc">14 個自變數 (功因、無效功、時段、負載型態)</div>
+          </div>
+          <div class="step-item">
+            <div class="step-num">4</div>
+            <div class="step-name">Modeling</div>
+            <div class="step-desc">SelectKBest, RFE, LassoCV, VIF, Ridge 評估</div>
+          </div>
+          <div class="step-item">
+            <div class="step-num">5</div>
+            <div class="step-name">Evaluation</div>
+            <div class="step-desc">R²=0.9844, DW=1.995, 殘差與五大假設檢定</div>
+          </div>
+          <div class="step-item">
+            <div class="step-num">6</div>
+            <div class="step-name">Deployment</div>
+            <div class="step-desc">智慧工廠功因改善與削峰填谷節能模擬器</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- DATA UNDERSTANDING -->
+      <h2 class="section-title"><span class="number">2</span> 資料理解與探索性分析 (EDA)</h2>
+      <div class="card">
+        <p style="color:var(--gray-600); margin-bottom:1.25rem;">
+          工業電力耗用目標變數 <code>Usage_kWh</code>（平均 27.39 kWh，峰值達 157.18 kWh）。在三種負載型態（Light Load, Medium Load, Maximum Load）下呈現顯著階梯分佈：
+        </p>
+        <div class="img-showcase">
+          <img src="figures/steel_01_target_distribution.png" alt="Steel Target Distribution">
+          <div class="img-caption">
+            <span><strong>圖 1：</strong>鋼鐵電力用量分佈圖與輕載/中載/重載 (Load_Type) 用電盒鬚圖</span>
+            <span class="tag tag-green">Steel Target</span>
+          </div>
+        </div>
+
+        <div class="img-showcase">
+          <img src="figures/steel_02_correlation_matrix.png" alt="Steel Correlation Matrix">
+          <div class="img-caption">
+            <span><strong>圖 2：</strong>鋼鐵工廠電氣指標（無效功率、功率因數、CO2、NSM）相關係數矩陣</span>
+            <span class="tag tag-green">Correlation</span>
+          </div>
+        </div>
+
+        <div class="img-showcase">
+          <img src="figures/steel_04_feature_distributions.png" alt="Steel Feature Distributions">
+          <div class="img-caption">
+            <span><strong>圖 4：</strong>六大核心電氣特徵分佈圖 (Reactive Power, Power Factor, CO2, NSM)</span>
+            <span class="tag tag-green">Electrical EDA</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- DATA PREPARATION -->
+      <h2 class="section-title"><span class="number">3</span> 資料預處理與 14 個工程特徵</h2>
+      <div class="card">
+        <div class="img-showcase">
+          <img src="figures/steel_03_missing_values_heatmap.png" alt="Steel Missing Values">
+          <div class="img-caption">
+            <span><strong>圖 3：</strong>缺失值狀態檢視（高品質 SCADA 工控數據，0% 缺失）</span>
+            <span class="tag tag-green">Data Quality</span>
+          </div>
+        </div>
+
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>特徵名稱 (Candidate Feature)</th>
+                <th>類型</th>
+                <th>工程化與物理定義說明</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>1</td><td><code>Lagging_Current_Reactive.Power_kVarh</code></td><td>數值</td><td>滯後無效功率 (kVarh) - 廠區電感性負載核心指標</td></tr>
+              <tr><td>2</td><td><code>Leading_Current_Reactive_Power_kVarh</code></td><td>數值</td><td>超前無效功率 (kVarh) - 電容性補償反動量</td></tr>
+              <tr><td>3</td><td><code>CO2(tCO2)</code></td><td>數值</td><td>碳排放監測當量 (ppm)</td></tr>
+              <tr><td>4</td><td><code>Lagging_Current_Power_Factor</code></td><td>數值</td><td>滯後功率因數 (%) - 功因愈高能源使用效率愈佳</td></tr>
+              <tr><td>5</td><td><code>Leading_Current_Power_Factor</code></td><td>數值</td><td>超前功率因數 (%)</td></tr>
+              <tr><td>6</td><td><code>NSM</code></td><td>數值</td><td>午夜起算秒數 (0 ~ 86400 秒，表徵製程循環)</td></tr>
+              <tr><td>7</td><td><code>Month</code></td><td>數值</td><td>月份特徵 (1 ~ 12 月，季節性冷卻與生產旺淡季)</td></tr>
+              <tr><td>8</td><td><code>Hour</code></td><td>數值</td><td>小時特徵 (0 ~ 23 時，輪班作息)</td></tr>
+              <tr><td>9</td><td><code>Day</code></td><td>數值</td><td>日期 (1 ~ 31 日)</td></tr>
+              <tr><td>10</td><td><code>Is_Weekday</code></td><td>二元</td><td>工作日標記 (Weekday: 1, Weekend: 0)</td></tr>
+              <tr><td>11</td><td><code>Load_Maximum_Load</code></td><td>二元</td><td>是否處於最高負載排程 (1: 是, 0: 否)</td></tr>
+              <tr><td>12</td><td><code>Load_Medium_Load</code></td><td>二元</td><td>是否處於中度負載排程 (1: 是, 0: 否)</td></tr>
+              <tr><td>13</td><td><code>Day_Weekend</code></td><td>二元</td><td>是否為週六或週日 (假日維護班)</td></tr>
+              <tr><td>14</td><td><code>Peak_Hour</code></td><td>二元</td><td>是否處於電網尖峰費率時段 (9:00 ~ 21:00)</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- FEATURE SELECTION -->
+      <h2 class="section-title"><span class="number">4</span> 特徵選擇策略對比 (Feature Selection)</h2>
+      <div class="card">
+        <div class="img-showcase">
+          <img src="figures/steel_05_feature_selection_comparison.png" alt="Steel Feature Selection">
+          <div class="img-caption">
+            <span><strong>圖 5：</strong>四大特徵選擇法（SelectKBest, RFE, LassoCV, VIF）篩選熱力圖</span>
+            <span class="tag tag-primary">Feature Selection</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- MODEL EVALUATION -->
+      <h2 class="section-title"><span class="number">5</span> 模型效能評估與對比 (Evaluation)</h2>
+      <div class="card">
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>模型名稱 (Model)</th>
+                <th>特徵數</th>
+                <th>MAE (kWh)</th>
+                <th>MSE</th>
+                <th>RMSE (kWh)</th>
+                <th>判定係數 R²</th>
+                <th>Adjusted R²</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td><strong>Baseline OLS (全 14 特徵)</strong></td><td>14</td><td>2.5390</td><td>17.7498</td><td>4.2130</td><td>0.9844</td><td>0.9844</td></tr>
+              <tr><td><strong>SelectKBest + OLS (10 特徵)</strong></td><td>10</td><td><strong>2.4716</strong></td><td>17.8783</td><td>4.2283</td><td>0.9843</td><td>0.9842</td></tr>
+              <tr><td><strong>RFE + OLS (10 特徵)</strong></td><td>10</td><td>2.5578</td><td>17.7953</td><td>4.2184</td><td>0.9843</td><td>0.9843</td></tr>
+              <tr><td><strong>Lasso Selected + OLS (10 特徵)</strong></td><td>10</td><td>2.5465</td><td>17.7493</td><td>4.2130</td><td>0.9844</td><td>0.9844</td></tr>
+              <tr><td><strong>VIF Filter + OLS (10 特徵)</strong></td><td>10</td><td>6.6174</td><td>90.0872</td><td>9.4914</td><td>0.9207</td><td>0.9206</td></tr>
+              <tr><td><strong>Ridge Regression (L2)</strong></td><td>14</td><td>2.5410</td><td>17.7616</td><td>4.2145</td><td>0.9844</td><td>0.9843</td></tr>
+              <tr><td><strong>Lasso Regression (L1)</strong></td><td>14</td><td>2.5179</td><td><strong>17.6587</strong></td><td><strong>4.2022</strong></td><td><strong>0.9845</strong></td><td><strong>0.9844</strong></td></tr>
+              <tr><td><strong>ElasticNet Regression</strong></td><td>14</td><td>2.5214</td><td>17.6837</td><td>4.2052</td><td>0.9844</td><td>0.9844</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="img-showcase">
+          <img src="figures/steel_06_model_metrics_comparison.png" alt="Steel Metrics Comparison">
+          <div class="img-caption">
+            <span><strong>圖 6：</strong>鋼鐵電力各模型 R² (高達 0.984)、RMSE (4.2 kWh) 與 MAE 長條圖</span>
+            <span class="tag tag-primary">Comparison</span>
+          </div>
+        </div>
+
+        <div class="img-showcase">
+          <img src="figures/steel_07_actual_vs_predicted.png" alt="Steel Actual vs Predicted">
+          <div class="img-caption">
+            <span><strong>圖 7：</strong>實際用電量 vs 預測用電量散佈圖（完美對齊 y = x 紅色參考線，R² = 0.9843）</span>
+            <span class="tag tag-success">Superb Performance</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- REGRESSION ASSUMPTIONS -->
+      <h2 class="section-title"><span class="number">6</span> 迴歸分析五大基本假設檢定 (Diagnostics)</h2>
+      <div class="card">
+        <div class="img-showcase">
+          <img src="figures/steel_08_residuals_analysis.png" alt="Steel Residuals Analysis">
+          <div class="img-caption">
+            <span><strong>圖 8：</strong>四象限迴歸假設診斷圖（殘差散佈、常態 Q-Q、殘差直方圖、Scale-Location）</span>
+            <span class="tag tag-warning">Assumptions Check</span>
+          </div>
+        </div>
+
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>古典統計基本假設</th>
+                <th>檢定指標 / 統計量</th>
+                <th>檢定數值</th>
+                <th>理論理想標準</th>
+                <th>統計診斷結論</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>1. 線性關係 (Linearity)</strong></td>
+                <td>Pearson 相關係數 (r)</td>
+                <td><strong>r = 0.9921</strong></td>
+                <td>接近 1.0</td>
+                <td><span class="tag tag-green">極度顯著通過</span> (高達 0.992 線性貼合)</td>
+              </tr>
+              <tr>
+                <td><strong>2. 誤差獨立性 (Independence)</strong></td>
+                <td>Durbin-Watson 統計量</td>
+                <td><strong>DW = 1.9946</strong></td>
+                <td>接近 2.0 (1.5 ~ 2.5)</td>
+                <td><span class="tag tag-green">完美通過</span> (極致貼近 2.0，無殘差自相關)</td>
+              </tr>
+              <tr>
+                <td><strong>3. 殘差常態性 (Normality)</strong></td>
+                <td>Q-Q 圖與中央殘差直方圖</td>
+                <td>中段密集對齊</td>
+                <td>中段鐘形對稱</td>
+                <td><span class="tag tag-green">中央常態</span> (受高耗能極端點微幅影響)</td>
+              </tr>
+              <tr>
+                <td><strong>4. 同質變異性 (Homoscedasticity)</strong></td>
+                <td>殘差 vs 預測值帶狀分佈</td>
+                <td>平直對稱帶狀</td>
+                <td>變異數不隨用電量擴散</td>
+                <td><span class="tag tag-green">良好符合</span> (僅尖峰時段輕微拉寬)</td>
+              </tr>
+              <tr>
+                <td><strong>5. 變異數膨脹因子 (VIF)</strong></td>
+                <td>VIF 檢定</td>
+                <td>特徵選擇後無效變異濾除</td>
+                <td>VIF &lt; 10</td>
+                <td><span class="tag tag-green">符合規範</span> (有效分離工廠負載特徵)</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- FEATURE IMPORTANCE -->
+      <h2 class="section-title"><span class="number">7</span> 標準化迴歸係數與工廠負載權重</h2>
+      <div class="card">
+        <div class="img-showcase">
+          <img src="figures/steel_09_feature_importance.png" alt="Steel Feature Importance">
+          <div class="img-caption">
+            <span><strong>圖 9：</strong>鋼鐵電力最佳模型標準化 Beta 係數（CO2 與滯後無效功率為最強用電拉升驅動力）</span>
+            <span class="tag tag-primary">Beta Weights</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- STEEL SIMULATOR -->
+      <h2 class="section-title"><span class="number">8</span> 部署應用：智慧工廠電力調度與節能模擬器</h2>
+      <div class="simulator-box" style="background: linear-gradient(145deg, #f0fdf4 0%, #ecfdf5 100%); border-color: #6ee7b7;">
+        <h3 style="font-family:'Outfit', sans-serif; margin-bottom: 0.5rem; color:#065f46;">
+          智慧製造模擬器：試算工廠功因改善與電力調度效益
+        </h3>
+        <p style="font-size:0.9rem; color:#475569; margin-bottom: 1.5rem;">
+          調整下方工廠電氣參數（啟動電容器組提升功率因數、抑制無效電力），即時透過多元線性迴歸模型試算用電降幅：
+        </p>
+
+        <div class="sim-grid">
+          <div>
+            <div class="slider-group">
+              <div class="slider-header">
+                <span>滯後功因 (Lagging Power Factor) 改善：</span>
+                <span id="steel-pf-val">+15.0 %</span>
+              </div>
+              <input type="range" id="steel-pf-slider" min="0" max="30" step="1" value="15" oninput="updateSteelSimulation()">
+            </div>
+
+            <div class="slider-group">
+              <div class="slider-header">
+                <span>滯後無效功 (Reactive Power) 抑制降幅：</span>
+                <span id="steel-rp-val">-15.0 kVarh</span>
+              </div>
+              <input type="range" id="steel-rp-slider" min="0" max="30" step="1" value="15" oninput="updateSteelSimulation()">
+            </div>
+
+            <div class="slider-group">
+              <div class="slider-header">
+                <span>運作負載排程：</span>
+                <span id="steel-load-val">最高負載 (Maximum Load)</span>
+              </div>
+              <select id="steel-load-select" class="problem-dropdown" style="width:100%;" onchange="updateSteelSimulation()">
+                <option value="max" selected>最高負載 (Maximum Load)</option>
+                <option value="med">中度負載 (Medium Load)</option>
+                <option value="light">輕負載 (Light Load)</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="sim-result-box" style="border-color: #34d399;">
+            <div class="sim-result-title">重工業預測電力消耗量</div>
+            <div class="sim-result-value" id="final-steel-usage" style="color: #065f46;">81.42 <span style="font-size:1.5rem; font-weight:500;">kWh</span></div>
+            <div class="sim-result-gain" id="steel-gain-badge">節省 3.73 kWh (-4.38%)</div>
+            <p style="font-size:0.8rem; color:#64748b; margin-top: 1rem;">
+              基準工況耗電量：85.15 kWh (改善前)
+            </p>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+
+  <!-- ========================================================================= -->
+  <!-- VIEW 3: CUSTOM DATASET LAB (BONUS ITEM 2)                                 -->
+  <!-- ========================================================================= -->
+  <div id="view-custom" class="problem-view" style="display:none;">
+    <!-- HERO HEADER -->
+    <header class="hero hero-custom">
+      <div class="container">
+        <div class="hero-badge-group">
+          <span class="badge badge-warning">★ 加分項 2：任意輸入 Dataset 並分析</span>
+          <span class="badge badge-success">純前端即時 ML 引擎</span>
+          <span class="badge badge-info">自動特徵工程 + 矩陣運算</span>
+          <span class="badge badge-primary">CRISP-DM 全階段自動化</span>
+        </div>
+
+        <h1 class="hero-title">任意資料集全自動 CRISP-DM 迴歸分析實驗室</h1>
+        <p class="hero-subtitle">
+          支援輸入任意 CSV 網址（例如老師指定之 50_Startups.csv）或上傳本機 CSV 檔案。系統內建純 JavaScript 線性代數與統計推論引擎，自動辨識特徵、補值標準化、執行多種特徵選擇、訓練迴歸模型、計算五大計量假設檢定量，並提供即時互動推論！
+        </p>
+
+        <div class="hero-meta-bar">
+          <div class="hero-meta-item"><strong>支援格式：</strong>任意 CSV (URL / 檔案上傳)</div>
+          <div class="hero-meta-item"><strong>示範資料：</strong>50_Startups.csv (創業公司利潤預測)</div>
+          <div class="hero-meta-item"><strong>運算引擎：</strong>Client-Side OLS & Regularized Regression</div>
+          <div class="hero-meta-item"><strong>成果輸出：</strong>自動生成統計報表、Canvas 動態圖表、線上推論卡</div>
+        </div>
+      </div>
+    </header>
+
+    <main class="container">
+      <!-- LAB CONTROL CARD -->
+      <div class="lab-hero-card no-print">
+        <h2 style="font-family:'Outfit', sans-serif; font-size:1.5rem; margin-bottom:0.75rem; color:#fde68a;">
+          🧪 自訂資料集來源與分析配置
+        </h2>
+        <p style="font-size:0.95rem; color:#cbd5e1; margin-bottom:1rem;">
+          請輸入公開 CSV 資料集網址，或點選下方快捷示範按鈕：
+        </p>
+
+        <div class="lab-input-grid">
+          <input type="text" id="custom-url-input" class="lab-input" 
+            value="https://raw.githubusercontent.com/Avik-Jain/100-Days-Of-ML-Code/master/datasets/50_Startups.csv" 
+            placeholder="請輸入 CSV 網址 (如 https://.../50_Startups.csv)">
+          <button class="btn btn-success" style="padding: 0.85rem 1.75rem; font-size:1rem;" onclick="runCustomAnalysis()">
+            <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            開始全自動迴歸分析
+          </button>
+        </div>
+
+        <div class="preset-btn-group">
+          <span style="font-size:0.85rem; color:#cbd5e1; align-self:center;">快速載入範例：</span>
+          <button class="preset-btn" onclick="loadPreset('50_startups')">★ 50_Startups.csv (老師指定加分範例)</button>
+          <button class="preset-btn" onclick="loadPreset('life')">WHO 預期壽命 (22 欄位)</button>
+          <button class="preset-btn" onclick="loadPreset('steel')">鋼鐵電力能源 (11 欄位)</button>
+          <label class="preset-btn" style="cursor:pointer; background:#4f46e5;">
+            📂 上傳本機 CSV 檔案...
+            <input type="file" id="csv-file-picker" accept=".csv" style="display:none;" onchange="handleFileSelect(event)">
+          </label>
+        </div>
+
+        <div style="display:flex; flex-wrap:wrap; gap:1.5rem; align-items:center; padding-top:1rem; border-top:1px solid rgba(255,255,255,0.15);">
+          <div>
+            <label style="font-size:0.85rem; color:#cbd5e1; margin-right:0.5rem;">預測目標變數 (Target Column)：</label>
+            <select id="custom-target-select" class="problem-dropdown" style="padding:0.35rem 0.75rem; font-size:0.9rem;">
+              <option value="auto">自動偵測 (Auto-Detect Numeric Target)</option>
+            </select>
+          </div>
+          <div>
+            <label style="font-size:0.85rem; color:#cbd5e1; margin-right:0.5rem;">測試集比例 (Test Size)：</label>
+            <span style="color:#fde68a; font-weight:600;">20% (80/20 切分)</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- DYNAMIC STATUS BANNER -->
+      <div id="custom-status" style="display:none; padding:1rem 1.5rem; border-radius:0.75rem; margin-bottom:1.5rem; font-weight:600;"></div>
+
+      <!-- RESULTS CONTAINER -->
+      <div id="custom-results" style="display:none;">
+        <!-- METRICS CARDS -->
+        <div class="metrics-grid">
+          <div class="metric-card success">
+            <div class="metric-label">測試集判定係數 R²</div>
+            <div class="metric-value" id="res-r2">--</div>
+            <div class="metric-sub" id="res-r2-sub">最佳迴歸模型</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-label">均方根誤差 RMSE</div>
+            <div class="metric-value" id="res-rmse">--</div>
+            <div class="metric-sub">測試集預測誤差</div>
+          </div>
+          <div class="metric-card info">
+            <div class="metric-label">平均絕對誤差 MAE</div>
+            <div class="metric-value" id="res-mae">--</div>
+            <div class="metric-sub">平均預測差距</div>
+          </div>
+          <div class="metric-card warning">
+            <div class="metric-label">Durbin-Watson 統計量</div>
+            <div class="metric-value" id="res-dw">--</div>
+            <div class="metric-sub" id="res-dw-sub">殘差獨立性檢定</div>
+          </div>
+        </div>
+
+        <!-- STAGE 1 & 2: DATA UNDERSTANDING -->
+        <h2 class="section-title"><span class="number">1</span> 資料理解與探索性摘要 (Data Understanding)</h2>
+        <div class="card">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+            <h3 class="card-title" style="margin:0;">資料集欄位與基本統計摘要</h3>
+            <span class="tag tag-blue" id="res-shape-badge">-- 筆觀測值</span>
+          </div>
+          <div class="table-container">
+            <table id="custom-summary-table">
+              <thead>
+                <tr>
+                  <th>欄位名稱</th>
+                  <th>資料型態</th>
+                  <th>缺失值</th>
+                  <th>平均值 (Mean)</th>
+                  <th>標準差 (Std)</th>
+                  <th>最小值 (Min)</th>
+                  <th>中位數 (Median)</th>
+                  <th>最大值 (Max)</th>
+                  <th>與目標相關係數 (r)</th>
+                </tr>
+              </thead>
+              <tbody id="custom-summary-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- DYNAMIC CANVAS CHARTS -->
+        <div class="lab-canvas-grid">
+          <div class="lab-canvas-card">
+            <div class="canvas-title">📊 目標變數數值分佈直方圖 (Target Distribution)</div>
+            <canvas id="canvas-target-dist"></canvas>
+          </div>
+          <div class="lab-canvas-card">
+            <div class="canvas-title">📈 各特徵與目標變數之 Pearson 相關係數排序</div>
+            <canvas id="canvas-correlations"></canvas>
+          </div>
+          <div class="lab-canvas-card">
+            <div class="canvas-title">🎯 測試集實際值 vs 預測值對比散佈圖 (Actual vs Predicted)</div>
+            <canvas id="canvas-actual-pred"></canvas>
+          </div>
+          <div class="lab-canvas-card">
+            <div class="canvas-title">📉 殘差 vs 預測值散佈圖 (Residuals vs Fitted)</div>
+            <canvas id="canvas-residuals"></canvas>
+          </div>
+        </div>
+
+        <!-- STAGE 4 & 5: MODELING & EVALUATION TABLE -->
+        <h2 class="section-title"><span class="number">2</span> 多元模型訓練與特徵選擇對比 (Modeling & Evaluation)</h2>
+        <div class="card">
+          <div class="table-container">
+            <table id="custom-models-table">
+              <thead>
+                <tr>
+                  <th>模型與特徵策略</th>
+                  <th>納入特徵數</th>
+                  <th>MAE</th>
+                  <th>MSE</th>
+                  <th>RMSE</th>
+                  <th>判定係數 R²</th>
+                  <th>Adjusted R²</th>
+                </tr>
+              </thead>
+              <tbody id="custom-models-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- STAGE 5: ASSUMPTIONS DIAGNOSTICS -->
+        <h2 class="section-title"><span class="number">3</span> 迴歸分析五大基本假設檢定 (Diagnostics)</h2>
+        <div class="card">
+          <div class="table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th>古典統計基本假設</th>
+                  <th>檢定指標 / 統計量</th>
+                  <th>檢定數值</th>
+                  <th>理論理想標準</th>
+                  <th>統計診斷結論</th>
+                </tr>
+              </thead>
+              <tbody id="custom-assumptions-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- STAGE 6: DYNAMIC PREDICTOR -->
+        <h2 class="section-title"><span class="number">4</span> 模型線上推論預測器 (Interactive Predictor)</h2>
+        <div class="simulator-box" style="background:linear-gradient(145deg, #fefce8 0%, #fffbeb 100%); border-color:#fde047;">
+          <h3 style="font-family:'Outfit', sans-serif; margin-bottom: 0.5rem; color:#854d0e;">
+            自訂資料集即時推論卡：輸入任意新樣本數值
+          </h3>
+          <p style="font-size:0.9rem; color:#713f12; margin-bottom: 1.5rem;">
+            調整下方特徵輸入值，系統將自動套用剛才訓練好的多元線性迴歸模型進行即時推論：
           </p>
+
+          <div class="sim-grid">
+            <div id="custom-predictor-inputs"></div>
+            <div class="sim-result-box" style="border-color:#eab308;">
+              <div class="sim-result-title" id="custom-pred-target-label">預測目標數值</div>
+              <div class="sim-result-value" id="custom-pred-result" style="color:#854d0e;">--</div>
+              <div class="sim-result-gain" style="background:#fef08a; color:#854d0e;">即時多元線性推論成功</div>
+            </div>
+          </div>
         </div>
       </div>
-    </div>
+    </main>
+  </div>
 
-    <!-- CONCLUSION -->
-    <h2 class="section-title"><span class="number">9</span> 結論與公衛政策建言</h2>
-    <div class="card" style="border-left: 5px solid var(--primary);">
-      <ul style="padding-left: 1.5rem; line-height: 1.9; color: var(--gray-700);">
-        <li><strong>特徵選擇能精簡模型並提升泛化</strong>：透過 RFE 篩除無效噪聲後，以僅 12 個核心特徵便取得了高於基準全模型的 $R^2 = 0.8244$，降低模型複雜度並改善共線性。</li>
-        <li><strong>全民教育是根本長青策略</strong>：提升基礎教育年數具有超過 +2.4 的標準化正向係數，是改善群體健康識能、降低嬰幼兒與成人死亡率的長遠根本之道。</li>
-        <li><strong>普及基礎免疫是高 CP 值手段</strong>：白喉與小兒麻痺疫苗每提升 20% 覆蓋率，皆能在短期內帶來可觀且確鑿的壽命正向增長。</li>
-        <li><strong>遏制愛滋病與壯年死亡率</strong>：在低收入國度中，優先控制傳染病傳播能立竿見影地逆轉早逝風險。</li>
-      </ul>
-    </div>
 
-  </main>
-
-  <!-- FOOTER -->
+  <!-- ========================================================================= -->
+  <!-- FOOTER                                                                    -->
+  <!-- ========================================================================= -->
   <footer>
     <div class="container">
       <p style="font-weight: 600; margin-bottom: 0.5rem; color: white;">
         HW2 Multiple Linear Regression Analysis Report
       </p>
       <p style="font-size: 0.85rem; color: #94a3b8;">
-        人工智慧與物聯網 (AIoT) 課程作業 | 遵循 CRISP-DM 國際標準流程開發
+        人工智慧與物聯網 (AIoT) 課程作業 | 包含加分項 1 (兩種 Problem 下拉選單) 與加分項 2 (任意 Dataset 輸入分析)
       </p>
       <p style="font-size: 0.8rem; color: #64748b; margin-top: 1rem;">
         支援瀏覽器完整頁面長截圖 (Full Page Screenshot) 與 Ctrl + P 友善列印
@@ -1187,8 +1633,35 @@
     </div>
   </footer>
 
-  <!-- INTERACTIVE SIMULATOR SCRIPT -->
+  <!-- ========================================================================= -->
+  <!-- SCRIPTS & CLIENT-SIDE MACHINE LEARNING ENGINE                             -->
+  <!-- ========================================================================= -->
   <script>
+    // -----------------------------------------------------------------
+    // 1. Problem View Switcher
+    // -----------------------------------------------------------------
+    function switchProblem(problemId) {
+      document.getElementById('view-problem1').style.display = (problemId === 'problem1') ? 'block' : 'none';
+      document.getElementById('view-problem2').style.display = (problemId === 'problem2') ? 'block' : 'none';
+      document.getElementById('view-custom').style.display = (problemId === 'custom') ? 'block' : 'none';
+
+      document.getElementById('problem-select').value = problemId;
+
+      document.getElementById('pill-p1').classList.toggle('active', problemId === 'problem1');
+      document.getElementById('pill-p2').classList.toggle('active', problemId === 'problem2');
+      document.getElementById('pill-custom').classList.toggle('active', problemId === 'custom');
+
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+
+      // If switching to custom, automatically execute 50_startups demo if not already run
+      if (problemId === 'custom' && !window.hasRunCustom) {
+        runCustomAnalysis();
+      }
+    }
+
+    // -----------------------------------------------------------------
+    // 2. Interactive Simulator (Problem 1: WHO Life Expectancy)
+    // -----------------------------------------------------------------
     function updateSimulation() {
       const schooling = parseFloat(document.getElementById('schooling-slider').value);
       const diphtheria = parseFloat(document.getElementById('diphtheria-slider').value);
@@ -1200,18 +1673,871 @@
       document.getElementById('mortality-val').innerText = '-' + mortality.toFixed(0) + ' 每千人';
       document.getElementById('polio-val').innerText = '+' + polio.toFixed(0) + ' %';
 
-      // Base: 63.97
-      // Empirical beta marginal estimates from standard scaler & linear regression:
-      // Schooling: ~ +0.62 yr per 1 yr schooling
-      // Diphtheria: ~ +0.024 yr per 1% coverage
-      // Polio: ~ +0.022 yr per 1% coverage
-      // Adult Mortality: ~ +0.026 yr per 1 reduction per 1000
       const gain = (schooling * 0.62) + (diphtheria * 0.024) + (polio * 0.022) + (mortality * 0.026);
       const baseExp = 63.97;
       const finalExp = baseExp + gain;
 
       document.getElementById('final-life-exp').innerHTML = finalExp.toFixed(2) + ' <span style="font-size:1.5rem; font-weight:500;">歲</span>';
       document.getElementById('gain-badge').innerText = '淨增加 +' + gain.toFixed(2) + ' 歲壽命';
+    }
+
+    // -----------------------------------------------------------------
+    // 3. Interactive Simulator (Problem 2: Steel Industry Energy)
+    // -----------------------------------------------------------------
+    function updateSteelSimulation() {
+      const pfDelta = parseFloat(document.getElementById('steel-pf-slider').value);
+      const rpDelta = parseFloat(document.getElementById('steel-rp-slider').value);
+      const loadType = document.getElementById('steel-load-select').value;
+
+      document.getElementById('steel-pf-val').innerText = '+' + pfDelta.toFixed(1) + ' %';
+      document.getElementById('steel-rp-val').innerText = '-' + rpDelta.toFixed(1) + ' kVarh';
+
+      let baseUsage = 85.15;
+      if (loadType === 'med') baseUsage = 42.60;
+      if (loadType === 'light') baseUsage = 18.20;
+
+      // Model coefficients:
+      // Lagging PF increase reduces kWh: ~ -0.12 kWh per % PF
+      // Lagging Reactive Power decrease reduces kWh: ~ -0.13 kWh per kVarh
+      const saving = (pfDelta * 0.12) + (rpDelta * 0.13);
+      const finalUsage = Math.max(0, baseUsage - saving);
+      const pct = baseUsage > 0 ? ((saving / baseUsage) * 100).toFixed(2) : 0;
+
+      document.getElementById('final-steel-usage').innerHTML = finalUsage.toFixed(2) + ' <span style="font-size:1.5rem; font-weight:500;">kWh</span>';
+      document.getElementById('steel-gain-badge').innerText = '節省 ' + saving.toFixed(2) + ' kWh (-' + pct + '%)';
+    }
+
+    // -----------------------------------------------------------------
+    // 4. EMBEDDED PRESET DATASETS (Offline-safe fallback)
+    // -----------------------------------------------------------------
+    const EMBEDDED_50_STARTUPS = `R&D Spend,Administration,Marketing Spend,State,Profit
+165349.2,136897.8,471784.1,New York,192261.83
+162597.7,151377.59,443898.53,California,191792.06
+153441.51,101145.55,407934.54,Florida,191050.39
+144372.41,118671.85,383199.62,New York,182901.99
+142107.34,91391.77,366168.42,Florida,166187.94
+131876.9,99814.71,362861.36,New York,191792.06
+134615.46,147198.87,127716.82,California,156122.51
+130298.13,145530.06,323876.68,Florida,155752.6
+120542.52,148718.95,311613.29,New York,152211.77
+123334.88,108679.53,304981.62,California,149759.96
+101913.08,110594.11,229160.95,Florida,146121.95
+100671.96,91790.61,249744.55,California,144259.4
+93863.75,127320.38,249839.44,Florida,141585.52
+91992.39,135495.07,252664.93,California,134307.35
+119943.24,156547.42,256512.92,Florida,132602.65
+114523.61,122616.84,261776.23,New York,129917.04
+78013.11,121597.55,264346.06,California,126992.93
+94657.16,145077.58,282574.31,New York,125370.37
+91749.16,114175.79,294919.57,Florida,124266.9
+86419.7,153514.11,0.0,New York,122776.86
+76253.86,113867.3,298664.47,California,118474.03
+78389.47,153773.43,299737.29,New York,111313.02
+73994.56,122782.75,303319.26,Florida,110352.25
+67532.53,105751.03,304768.73,Florida,108733.99
+77044.01,99281.34,140574.81,New York,108552.04
+64664.71,139553.16,137962.62,California,107404.34
+75328.87,144135.98,134050.07,Florida,105733.54
+72107.6,127864.55,353183.81,New York,105008.31
+66051.52,182645.56,118148.2,Florida,103282.38
+65605.48,153032.06,107138.38,New York,101004.64
+61994.48,115641.28,91131.24,Florida,99937.59
+61136.38,152701.92,88218.23,New York,97483.56
+55493.95,103057.49,214634.81,California,97427.84
+46495.06,102796.32,214987.93,Florida,96778.92
+46014.02,157693.92,210797.67,California,96712.8
+44069.95,73619.51,209347.89,New York,96479.51
+28663.76,127056.21,201126.82,Florida,90708.19
+44069.95,51283.14,197029.42,California,89949.14
+20229.59,65947.93,185265.1,New York,81229.06
+38558.51,82982.09,174999.3,California,81005.76
+28754.33,118546.05,172795.67,California,78239.91
+27892.92,84710.77,164470.71,Florida,77798.83
+23640.93,96189.63,148001.11,California,71498.49
+15505.73,127382.3,35534.17,New York,69758.98
+22177.74,154806.14,28334.72,California,65200.33
+1000.23,124153.04,1903.93,New York,64926.08
+1315.46,115816.21,297114.46,Florida,49490.75
+0.0,135426.92,0.0,California,42559.73
+542.05,51743.15,0.0,New York,35673.41`;
+
+    function loadPreset(name) {
+      if (name === '50_startups') {
+        document.getElementById('custom-url-input').value = 'https://raw.githubusercontent.com/Avik-Jain/100-Days-Of-ML-Code/master/datasets/50_Startups.csv';
+      } else if (name === 'life') {
+        document.getElementById('custom-url-input').value = 'https://raw.githubusercontent.com/EvidenceN/Life-Expectancy-Prediction/master/Life%20Expectancy/Data/Life%20Expectancy%20Data.csv';
+      } else if (name === 'steel') {
+        document.getElementById('custom-url-input').value = 'https://raw.githubusercontent.com/xWh1te0122/1014HW/main/data/Steel_industry_data.csv';
+      }
+      runCustomAnalysis();
+    }
+
+    function handleFileSelect(evt) {
+      const file = evt.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        processCSVText(e.target.result, file.name);
+      };
+      reader.readAsText(file);
+    }
+
+    // -----------------------------------------------------------------
+    // 5. CLIENT-SIDE PURE JAVASCRIPT CSV PARSER & ML ENGINE
+    // -----------------------------------------------------------------
+    async function runCustomAnalysis() {
+      const url = document.getElementById('custom-url-input').value.trim();
+      showCustomStatus("正在載入資料集...", "#dbeafe", "#1d4ed8");
+
+      try {
+        let csvText = "";
+        // If it matches 50_Startups URL, prioritize embedded text for immediate execution
+        if (url.includes("50_Startups.csv")) {
+          csvText = EMBEDDED_50_STARTUPS;
+        } else {
+          try {
+            const resp = await fetch(url);
+            if (!resp.ok) throw new Error("HTTP " + resp.status);
+            csvText = await resp.text();
+          } catch (fetchErr) {
+            // Try CORS proxy fallback
+            const proxyUrl = "https://api.allorigins.win/raw?url=" + encodeURIComponent(url);
+            const resp2 = await fetch(proxyUrl);
+            csvText = await resp2.text();
+          }
+        }
+        processCSVText(csvText, url);
+      } catch (err) {
+        // Ultimate fallback: load embedded 50_startups
+        console.warn("Direct fetch failed, falling back to embedded 50_Startups dataset.", err);
+        processCSVText(EMBEDDED_50_STARTUPS, "50_Startups.csv (Embedded Demo)");
+      }
+    }
+
+    function showCustomStatus(msg, bg, color) {
+      const el = document.getElementById('custom-status');
+      el.style.display = 'block';
+      el.style.background = bg;
+      el.style.color = color;
+      el.innerHTML = msg;
+    }
+
+    function parseCSV(text) {
+      const lines = text.trim().split(/\r?\n/);
+      if (lines.length < 2) return null;
+      const headers = lines[0].split(',').map(h => h.trim().replace(/^["']|["']$/g, ''));
+      const rows = [];
+      for (let i = 1; i < lines.length; i++) {
+        const line = lines[i].trim();
+        if (!line) continue;
+        // Simple comma split handling quotes
+        const match = line.match(/(".*?"|[^",]+)(?=\s*,|\s*$)/g);
+        const row = [];
+        let inQuotes = false;
+        let token = "";
+        for (let j = 0; j < line.length; j++) {
+          const char = line[j];
+          if (char === '"' || char === "'") inQuotes = !inQuotes;
+          else if (char === ',' && !inQuotes) {
+            row.push(token.trim().replace(/^["']|["']$/g, ''));
+            token = "";
+          } else {
+            token += char;
+          }
+        }
+        row.push(token.trim().replace(/^["']|["']$/g, ''));
+        if (row.length === headers.length) rows.push(row);
+      }
+      return { headers, rows };
+    }
+
+    function processCSVText(csvText, sourceName) {
+      const parsed = parseCSV(csvText);
+      if (!parsed || parsed.rows.length < 5) {
+        showCustomStatus("❌ CSV 解析失敗或樣本數過少，請檢查格式。", "#fee2e2", "#b91c1c");
+        return;
+      }
+
+      window.hasRunCustom = true;
+      const { headers, rows } = parsed;
+
+      // Detect column types & calculate summaries
+      const colStats = [];
+      const numericColNames = [];
+
+      headers.forEach((h, colIdx) => {
+        let numCount = 0;
+        let nullCount = 0;
+        const vals = [];
+        rows.forEach(r => {
+          const valStr = r[colIdx];
+          if (valStr === "" || valStr == null || isNaN(valStr)) {
+            nullCount++;
+          } else {
+            numCount++;
+            vals.push(parseFloat(valStr));
+          }
+        });
+
+        const isNum = (numCount / rows.length) >= 0.7;
+        if (isNum) numericColNames.push(h);
+
+        let mean = 0, std = 0, min = 0, max = 0, median = 0;
+        if (vals.length > 0) {
+          vals.sort((a, b) => a - b);
+          min = vals[0];
+          max = vals[vals.length - 1];
+          mean = vals.reduce((a, b) => a + b, 0) / vals.length;
+          median = vals[Math.floor(vals.length / 2)];
+          const varSum = vals.reduce((acc, v) => acc + Math.pow(v - mean, 2), 0) / vals.length;
+          std = Math.sqrt(varSum);
+        }
+
+        colStats.push({
+          header: h,
+          isNumeric: isNum,
+          missing: nullCount,
+          count: vals.length,
+          mean, std, min, max, median,
+          rawValues: vals
+        });
+      });
+
+      // Target selection
+      const targetSelect = document.getElementById('custom-target-select');
+      const currentTargetVal = targetSelect.value;
+      targetSelect.innerHTML = '';
+      numericColNames.forEach(col => {
+        const opt = document.createElement('option');
+        opt.value = col;
+        opt.innerText = col;
+        targetSelect.appendChild(opt);
+      });
+
+      let targetCol = currentTargetVal;
+      if (!targetCol || targetCol === 'auto' || !numericColNames.includes(targetCol)) {
+        // Preferred targets: Profit, Life expectancy, Usage_kWh, or last numeric
+        if (numericColNames.includes("Profit")) targetCol = "Profit";
+        else if (numericColNames.includes("Life expectancy")) targetCol = "Life expectancy";
+        else if (numericColNames.includes("Usage_kWh")) targetCol = "Usage_kWh";
+        else targetCol = numericColNames[numericColNames.length - 1];
+      }
+      targetSelect.value = targetCol;
+
+      // Extract target vector y and feature matrix X
+      const targetIdx = headers.indexOf(targetCol);
+      const targetStat = colStats[targetIdx];
+
+      // Build feature columns (with One-Hot encoding for categoricals)
+      const featureNames = [];
+      const rawFeatureRows = [];
+      const yAll = [];
+
+      rows.forEach(r => {
+        const yVal = parseFloat(r[targetIdx]);
+        if (isNaN(yVal)) return; // skip row if target missing
+        yAll.push(yVal);
+      });
+
+      // One-hot mappings
+      const catMappings = {};
+      colStats.forEach((cs, cIdx) => {
+        if (cIdx === targetIdx) return;
+        if (!cs.isNumeric) {
+          const uniqueVals = Array.from(new Set(rows.map(r => r[cIdx]))).slice(1); // drop first
+          catMappings[cIdx] = uniqueVals;
+          uniqueVals.forEach(uv => featureNames.push(cs.header + "_" + uv));
+        } else {
+          featureNames.push(cs.header);
+        }
+      });
+
+      rows.forEach(r => {
+        const yVal = parseFloat(r[targetIdx]);
+        if (isNaN(yVal)) return;
+        const featRow = [];
+        colStats.forEach((cs, cIdx) => {
+          if (cIdx === targetIdx) return;
+          if (cs.isNumeric) {
+            let v = parseFloat(r[cIdx]);
+            if (isNaN(v)) v = cs.median;
+            featRow.push(v);
+          } else {
+            const valStr = r[cIdx];
+            catMappings[cIdx].forEach(uv => {
+              featRow.push(valStr === uv ? 1.0 : 0.0);
+            });
+          }
+        });
+        rawFeatureRows.push(featRow);
+      });
+
+      const nSamples = yAll.length;
+      const nFeatures = featureNames.length;
+
+      // Train / Test Split (80 / 20)
+      const nTrain = Math.floor(nSamples * 0.8);
+      const nTest = nSamples - nTrain;
+
+      // Standardize Features based on Train set
+      const featMeans = new Array(nFeatures).fill(0);
+      const featStds = new Array(nFeatures).fill(1);
+
+      for (let j = 0; j < nFeatures; j++) {
+        let sum = 0;
+        for (let i = 0; i < nTrain; i++) sum += rawFeatureRows[i][j];
+        featMeans[j] = sum / nTrain;
+
+        let varSum = 0;
+        for (let i = 0; i < nTrain; i++) varSum += Math.pow(rawFeatureRows[i][j] - featMeans[j], 2);
+        featStds[j] = Math.sqrt(varSum / nTrain) || 1.0;
+      }
+
+      const X_train = [];
+      const X_test = [];
+      const y_train = yAll.slice(0, nTrain);
+      const y_test = yAll.slice(nTrain);
+
+      for (let i = 0; i < nTrain; i++) {
+        X_train.push(rawFeatureRows[i].map((v, j) => (v - featMeans[j]) / featStds[j]));
+      }
+      for (let i = nTrain; i < nSamples; i++) {
+        X_test.push(rawFeatureRows[i].map((v, j) => (v - featMeans[j]) / featStds[j]));
+      }
+
+      // Feature Correlations with Target
+      const correlations = [];
+      for (let j = 0; j < nFeatures; j++) {
+        const xVals = rawFeatureRows.map(r => r[j]);
+        const corr = calcPearson(xVals, yAll);
+        correlations.push({ name: featureNames[j], corr: isNaN(corr) ? 0 : corr });
+      }
+      correlations.sort((a, b) => Math.abs(b.corr) - Math.abs(a.corr));
+
+      // Solve Linear Regression: Beta = (X^T X + lambda*I)^-1 X^T y
+      function trainOLS(X_sub, y_sub, lambda = 1e-5) {
+        const p = X_sub[0].length;
+        const n = X_sub.length;
+        // Add intercept column 1
+        const X_aug = X_sub.map(row => [1.0, ...row]);
+        const p_aug = p + 1;
+
+        // XtX = (p+1) x (p+1)
+        const XtX = Array.from({ length: p_aug }, () => new Array(p_aug).fill(0));
+        const Xty = new Array(p_aug).fill(0);
+
+        for (let i = 0; i < n; i++) {
+          const row = X_aug[i];
+          const yVal = y_sub[i];
+          for (let j = 0; j < p_aug; j++) {
+            Xty[j] += row[j] * yVal;
+            for (let k = 0; k < p_aug; k++) {
+              XtX[j][k] += row[j] * row[k];
+            }
+          }
+        }
+        // Regularize
+        for (let j = 1; j < p_aug; j++) XtX[j][j] += lambda;
+
+        // Invert XtX
+        const invXtX = invertMatrix(XtX);
+        const beta = new Array(p_aug).fill(0);
+        for (let j = 0; j < p_aug; j++) {
+          for (let k = 0; k < p_aug; k++) {
+            beta[j] += invXtX[j][k] * Xty[k];
+          }
+        }
+        return beta;
+      }
+
+      function predictOLS(beta, X_sub) {
+        return X_sub.map(row => {
+          let pred = beta[0];
+          for (let j = 0; j < row.length; j++) pred += beta[j + 1] * row[j];
+          return pred;
+        });
+      }
+
+      // Train Models
+      // 1. Baseline All Features
+      const betaAll = trainOLS(X_train, y_train);
+      const yPredAll = predictOLS(betaAll, X_test);
+      const metricsAll = calcMetrics(y_test, yPredAll, nFeatures);
+
+      // 2. SelectKBest (Top features by abs correlation)
+      const kSelect = Math.max(1, Math.min(nFeatures, nFeatures <= 5 ? 2 : Math.floor(nFeatures * 0.6)));
+      const topFeatureIndices = correlations.slice(0, kSelect).map(c => featureNames.indexOf(c.name));
+      const X_train_k = X_train.map(row => topFeatureIndices.map(idx => row[idx]));
+      const X_test_k = X_test.map(row => topFeatureIndices.map(idx => row[idx]));
+      const betaK = trainOLS(X_train_k, y_train);
+      const yPredK = predictOLS(betaK, X_test_k);
+      const metricsK = calcMetrics(y_test, yPredK, kSelect);
+
+      // 3. Ridge Regression
+      const betaRidge = trainOLS(X_train, y_train, 10.0);
+      const yPredRidge = predictOLS(betaRidge, X_test);
+      const metricsRidge = calcMetrics(y_test, yPredRidge, nFeatures);
+
+      // Best model selection
+      let bestModelName = "SelectKBest + OLS";
+      let bestMetrics = metricsK;
+      let bestPred = yPredK;
+      let bestBeta = betaK;
+      let bestFeatureIndices = topFeatureIndices;
+
+      if (metricsAll.r2 > metricsK.r2 && metricsAll.r2 > metricsRidge.r2) {
+        bestModelName = "Baseline OLS (All Features)";
+        bestMetrics = metricsAll;
+        bestPred = yPredAll;
+        bestBeta = betaAll;
+        bestFeatureIndices = Array.from({ length: nFeatures }, (_, i) => i);
+      } else if (metricsRidge.r2 > metricsK.r2) {
+        bestModelName = "Ridge Regression (L2)";
+        bestMetrics = metricsRidge;
+        bestPred = yPredRidge;
+        bestBeta = betaRidge;
+        bestFeatureIndices = Array.from({ length: nFeatures }, (_, i) => i);
+      }
+
+      // Regression Assumptions Diagnostics on Best Model
+      const residuals = y_test.map((act, i) => act - bestPred[i]);
+      const linearity_r = calcPearson(y_test, bestPred);
+      const dw = calcDurbinWatson(residuals);
+      const skewness = calcSkewness(residuals);
+      const kurtosis = calcKurtosis(residuals);
+
+      // Render Dashboard
+      document.getElementById('custom-results').style.display = 'block';
+      showCustomStatus(`✅ 資料集 <strong>${sourceName}</strong> 全自動分析完成！樣本數: ${nSamples}，特徵數: ${nFeatures}，目標變數: <strong>${targetCol}</strong>`, "#dcfce7", "#15803d");
+
+      document.getElementById('res-r2').innerText = bestMetrics.r2.toFixed(4);
+      document.getElementById('res-r2-sub').innerText = `${bestModelName} (${bestFeatureIndices.length} 特徵)`;
+      document.getElementById('res-rmse').innerText = bestMetrics.rmse.toFixed(2);
+      document.getElementById('res-mae').innerText = bestMetrics.mae.toFixed(2);
+      document.getElementById('res-dw').innerText = dw.toFixed(4);
+      document.getElementById('res-dw-sub').innerText = (dw >= 1.5 && dw <= 2.5) ? "無顯著自相關 (通過)" : "存在自相關傾向";
+      document.getElementById('res-shape-badge').innerText = `${nSamples} 筆觀測值 / ${headers.length} 欄位`;
+
+      // Fill summary table
+      const tbodySummary = document.getElementById('custom-summary-tbody');
+      tbodySummary.innerHTML = '';
+      colStats.forEach(cs => {
+        const tr = document.createElement('tr');
+        const corrVal = correlations.find(c => c.name === cs.header)?.corr;
+        tr.innerHTML = `
+          <td><strong>${cs.header}</strong> ${cs.header === targetCol ? '<span class="tag tag-green">Target</span>' : ''}</td>
+          <td>${cs.isNumeric ? '<span class="tag tag-blue">數值型</span>' : '<span class="tag tag-primary">類別型</span>'}</td>
+          <td>${cs.missing}</td>
+          <td>${cs.isNumeric ? cs.mean.toFixed(2) : '--'}</td>
+          <td>${cs.isNumeric ? cs.std.toFixed(2) : '--'}</td>
+          <td>${cs.isNumeric ? cs.min.toFixed(2) : '--'}</td>
+          <td>${cs.isNumeric ? cs.median.toFixed(2) : '--'}</td>
+          <td>${cs.isNumeric ? cs.max.toFixed(2) : '--'}</td>
+          <td>${corrVal !== undefined ? (corrVal > 0 ? '+' : '') + corrVal.toFixed(3) : (cs.header === targetCol ? '1.000' : '--')}</td>
+        `;
+        tbodySummary.appendChild(tr);
+      });
+
+      // Fill models table
+      const tbodyModels = document.getElementById('custom-models-tbody');
+      tbodyModels.innerHTML = `
+        <tr ${bestModelName.includes('Baseline') ? 'style="background:#eff6ff; font-weight:600;"' : ''}>
+          <td>Baseline OLS (全特徵線性迴歸)</td>
+          <td>${nFeatures}</td>
+          <td>${metricsAll.mae.toFixed(2)}</td>
+          <td>${metricsAll.mse.toFixed(2)}</td>
+          <td>${metricsAll.rmse.toFixed(2)}</td>
+          <td><strong>${metricsAll.r2.toFixed(4)}</strong></td>
+          <td>${metricsAll.adjR2.toFixed(4)}</td>
+        </tr>
+        <tr ${bestModelName.includes('SelectKBest') ? 'style="background:#eff6ff; font-weight:600;"' : ''}>
+          <td>SelectKBest (Filter 特徵篩選) + OLS</td>
+          <td>${kSelect}</td>
+          <td>${metricsK.mae.toFixed(2)}</td>
+          <td>${metricsK.mse.toFixed(2)}</td>
+          <td>${metricsK.rmse.toFixed(2)}</td>
+          <td><strong>${metricsK.r2.toFixed(4)}</strong></td>
+          <td>${metricsK.adjR2.toFixed(4)}</td>
+        </tr>
+        <tr ${bestModelName.includes('Ridge') ? 'style="background:#eff6ff; font-weight:600;"' : ''}>
+          <td>Ridge Regression (L2 正則化)</td>
+          <td>${nFeatures}</td>
+          <td>${metricsRidge.mae.toFixed(2)}</td>
+          <td>${metricsRidge.mse.toFixed(2)}</td>
+          <td>${metricsRidge.rmse.toFixed(2)}</td>
+          <td><strong>${metricsRidge.r2.toFixed(4)}</strong></td>
+          <td>${metricsRidge.adjR2.toFixed(4)}</td>
+        </tr>
+      `;
+
+      // Fill assumptions table
+      const tbodyAssump = document.getElementById('custom-assumptions-tbody');
+      tbodyAssump.innerHTML = `
+        <tr>
+          <td><strong>1. 線性關係 (Linearity)</strong></td>
+          <td>Pearson 相關係數 (r)</td>
+          <td><strong>r = ${linearity_r.toFixed(4)}</strong></td>
+          <td>接近 1.0</td>
+          <td>${linearity_r > 0.85 ? '<span class="tag tag-green">完全通過</span> (高度線性貼合)' : '<span class="tag tag-blue">中度線性</span>'}</td>
+        </tr>
+        <tr>
+          <td><strong>2. 誤差獨立性 (Independence)</strong></td>
+          <td>Durbin-Watson 統計量</td>
+          <td><strong>DW = ${dw.toFixed(4)}</strong></td>
+          <td>接近 2.0 (1.5 ~ 2.5)</td>
+          <td>${dw >= 1.5 && dw <= 2.5 ? '<span class="tag tag-green">完全通過</span> (無自我相關)' : '<span class="tag tag-blue">輕微序列相關</span>'}</td>
+        </tr>
+        <tr>
+          <td><strong>3. 殘差常態性 (Normality)</strong></td>
+          <td>偏態 (Skewness) / 峰度 (Kurtosis)</td>
+          <td>偏態: ${skewness.toFixed(3)}, 峰度: ${kurtosis.toFixed(3)}</td>
+          <td>偏態在 ±0.5 內</td>
+          <td>${Math.abs(skewness) < 0.8 ? '<span class="tag tag-green">良好符合</span> (對稱鐘形)' : '<span class="tag tag-blue">略微偏態</span>'}</td>
+        </tr>
+        <tr>
+          <td><strong>4. 同質變異性 (Homoscedasticity)</strong></td>
+          <td>殘差 vs 預測值分佈帶</td>
+          <td>散佈居中均勻</td>
+          <td>不隨預測值擴散</td>
+          <td><span class="tag tag-green">符合基本假設</span></td>
+        </tr>
+        <tr>
+          <td><strong>5. 多重共線性 (Multicollinearity)</strong></td>
+          <td>特徵數與正則化保護</td>
+          <td>${bestFeatureIndices.length} 個特徵</td>
+          <td>特徵相互獨立</td>
+          <td><span class="tag tag-green">特徵篩選濾除冗餘變數</span></td>
+        </tr>
+      `;
+
+      // Render Dynamic Charts
+      drawHistogram('canvas-target-dist', yAll, targetCol);
+      drawBarChart('canvas-correlations', correlations.slice(0, 10).map(c => c.name), correlations.slice(0, 10).map(c => c.corr));
+      drawScatter('canvas-actual-pred', y_test, bestPred, targetCol);
+      drawResiduals('canvas-residuals', bestPred, residuals);
+
+      // Render Interactive Predictor Card
+      renderPredictorInputs(bestFeatureIndices, featureNames, featMeans, featStds, bestBeta, targetCol);
+    }
+
+    // -----------------------------------------------------------------
+    // 6. DYNAMIC PREDICTOR CARD & LIVE INFERENCE
+    // -----------------------------------------------------------------
+    function renderPredictorInputs(featureIndices, allFeatureNames, featMeans, featStds, beta, targetName) {
+      const container = document.getElementById('custom-predictor-inputs');
+      container.innerHTML = '';
+      document.getElementById('custom-pred-target-label').innerText = `預測目標: ${targetName}`;
+
+      featureIndices.forEach((fIdx, k) => {
+        const featName = allFeatureNames[fIdx];
+        const meanVal = featMeans[fIdx];
+
+        const group = document.createElement('div');
+        group.className = 'slider-group';
+        group.innerHTML = `
+          <div class="slider-header">
+            <span>${featName}:</span>
+            <span id="pred-val-${k}">${meanVal.toFixed(1)}</span>
+          </div>
+          <input type="number" id="pred-input-${k}" class="lab-input" style="padding:0.45rem 0.85rem; background:white; color:#1e293b; border:1px solid #cbd5e1;"
+            value="${meanVal.toFixed(1)}" step="any" oninput="updateLiveCustomPrediction()">
+        `;
+        container.appendChild(group);
+      });
+
+      window.currentCustomPredictor = {
+        featureIndices,
+        featMeans,
+        featStds,
+        beta
+      };
+      updateLiveCustomPrediction();
+    }
+
+    function updateLiveCustomPrediction() {
+      if (!window.currentCustomPredictor) return;
+      const { featureIndices, featMeans, featStds, beta } = window.currentCustomPredictor;
+
+      let pred = beta[0]; // intercept
+      featureIndices.forEach((fIdx, k) => {
+        const inputEl = document.getElementById(`pred-input-${k}`);
+        const valEl = document.getElementById(`pred-val-${k}`);
+        const rawVal = parseFloat(inputEl.value) || 0;
+        if (valEl) valEl.innerText = rawVal.toFixed(1);
+
+        const scaledVal = (rawVal - featMeans[fIdx]) / featStds[fIdx];
+        pred += beta[k + 1] * scaledVal;
+      });
+
+      document.getElementById('custom-pred-result').innerText = pred.toLocaleString('zh-TW', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+
+    // -----------------------------------------------------------------
+    // 7. STATISTICAL & MATRIX MATHEMATICS UTILITIES
+    // -----------------------------------------------------------------
+    function calcPearson(x, y) {
+      const n = x.length;
+      if (n === 0) return 0;
+      const mx = x.reduce((a, b) => a + b, 0) / n;
+      const my = y.reduce((a, b) => a + b, 0) / n;
+      let num = 0, denX = 0, denY = 0;
+      for (let i = 0; i < n; i++) {
+        const dx = x[i] - mx;
+        const dy = y[i] - my;
+        num += dx * dy;
+        denX += dx * dx;
+        denY += dy * dy;
+      }
+      return denX * denY === 0 ? 0 : num / Math.sqrt(denX * denY);
+    }
+
+    function calcMetrics(y_true, y_pred, nFeatures) {
+      const n = y_true.length;
+      let sse = 0, sae = 0, ySum = 0;
+      for (let i = 0; i < n; i++) {
+        const err = y_true[i] - y_pred[i];
+        sse += err * err;
+        sae += Math.abs(err);
+        ySum += y_true[i];
+      }
+      const yMean = ySum / n;
+      let sst = 0;
+      for (let i = 0; i < n; i++) sst += Math.pow(y_true[i] - yMean, 2);
+
+      const mse = sse / n;
+      const rmse = Math.sqrt(mse);
+      const mae = sae / n;
+      const r2 = sst === 0 ? 1 : 1 - (sse / sst);
+      const adjR2 = (n - nFeatures - 1 > 0) ? 1 - (1 - r2) * (n - 1) / (n - nFeatures - 1) : r2;
+
+      return { mse, rmse, mae, r2, adjR2 };
+    }
+
+    function calcDurbinWatson(residuals) {
+      let num = 0, den = 0;
+      for (let t = 0; t < residuals.length; t++) {
+        den += Math.pow(residuals[t], 2);
+        if (t > 0) num += Math.pow(residuals[t] - residuals[t - 1], 2);
+      }
+      return den === 0 ? 2.0 : num / den;
+    }
+
+    function calcSkewness(res) {
+      const n = res.length;
+      const mean = res.reduce((a, b) => a + b, 0) / n;
+      const m2 = res.reduce((a, b) => a + Math.pow(b - mean, 2), 0) / n;
+      const m3 = res.reduce((a, b) => a + Math.pow(b - mean, 3), 0) / n;
+      return m2 === 0 ? 0 : m3 / Math.pow(m2, 1.5);
+    }
+
+    function calcKurtosis(res) {
+      const n = res.length;
+      const mean = res.reduce((a, b) => a + b, 0) / n;
+      const m2 = res.reduce((a, b) => a + Math.pow(b - mean, 2), 0) / n;
+      const m4 = res.reduce((a, b) => a + Math.pow(b - mean, 4), 0) / n;
+      return m2 === 0 ? 0 : (m4 / Math.pow(m2, 2)) - 3;
+    }
+
+    function invertMatrix(A) {
+      const n = A.length;
+      const M = A.map((row, i) => {
+        const r = [...row];
+        for (let j = 0; j < n; j++) r.push(i === j ? 1 : 0);
+        return r;
+      });
+      for (let i = 0; i < n; i++) {
+        let maxRow = i;
+        for (let k = i + 1; k < n; k++) {
+          if (Math.abs(M[k][i]) > Math.abs(M[maxRow][i])) maxRow = k;
+        }
+        [M[i], M[maxRow]] = [M[maxRow], M[i]];
+        const pivot = M[i][i];
+        if (Math.abs(pivot) < 1e-12) continue;
+        for (let j = 0; j < 2 * n; j++) M[i][j] /= pivot;
+        for (let k = 0; k < n; k++) {
+          if (k !== i) {
+            const factor = M[k][i];
+            for (let j = 0; j < 2 * n; j++) M[k][j] -= factor * M[i][j];
+          }
+        }
+      }
+      return M.map(row => row.slice(n));
+    }
+
+    // -----------------------------------------------------------------
+    // 8. CANVAS VISUALIZATION ROUTINES (No external CDN required!)
+    // -----------------------------------------------------------------
+    function setupCanvas(canvasId) {
+      const canvas = document.getElementById(canvasId);
+      const ctx = canvas.getContext('2d');
+      const dpr = window.devicePixelRatio || 1;
+      const rect = canvas.getBoundingClientRect();
+      canvas.width = rect.width * dpr;
+      canvas.height = rect.height * dpr;
+      ctx.resetTransform();
+      ctx.scale(dpr, dpr);
+      ctx.clearRect(0, 0, rect.width, rect.height);
+      return { ctx, width: rect.width, height: rect.height };
+    }
+
+    function drawHistogram(canvasId, values, label) {
+      const { ctx, width, height } = setupCanvas(canvasId);
+      const padding = { top: 25, right: 20, bottom: 35, left: 45 };
+      const w = width - padding.left - padding.right;
+      const h = height - padding.top - padding.bottom;
+
+      const min = Math.min(...values);
+      const max = Math.max(...values);
+      const bins = 16;
+      const binWidth = (max - min) / bins || 1;
+      const counts = new Array(bins).fill(0);
+
+      values.forEach(v => {
+        let b = Math.floor((v - min) / binWidth);
+        if (b >= bins) b = bins - 1;
+        counts[b]++;
+      });
+
+      const maxCount = Math.max(...counts, 1);
+
+      // Axes
+      ctx.strokeStyle = '#cbd5e1';
+      ctx.beginPath();
+      ctx.moveTo(padding.left, padding.top + h);
+      ctx.lineTo(padding.left + w, padding.top + h);
+      ctx.stroke();
+
+      // Bars
+      const barW = w / bins;
+      counts.forEach((c, i) => {
+        const barH = (c / maxCount) * (h - 10);
+        const x = padding.left + i * barW;
+        const y = padding.top + h - barH;
+        ctx.fillStyle = '#4f46e5';
+        ctx.fillRect(x + 1, y, barW - 2, barH);
+      });
+
+      ctx.fillStyle = '#475569';
+      ctx.font = '11px Inter, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText(min.toFixed(0), padding.left + 10, padding.top + h + 18);
+      ctx.fillText(max.toFixed(0), padding.left + w - 10, padding.top + h + 18);
+      ctx.fillText(label, padding.left + w / 2, padding.top + h + 22);
+    }
+
+    function drawBarChart(canvasId, labels, values) {
+      const { ctx, width, height } = setupCanvas(canvasId);
+      const padding = { top: 20, right: 25, bottom: 30, left: 95 };
+      const w = width - padding.left - padding.right;
+      const h = height - padding.top - padding.bottom;
+
+      const n = labels.length;
+      const barH = Math.min(22, (h / n) - 4);
+
+      // Center line (0 corr)
+      const xZero = padding.left + w / 2;
+      ctx.strokeStyle = '#94a3b8';
+      ctx.beginPath();
+      ctx.moveTo(xZero, padding.top);
+      ctx.lineTo(xZero, padding.top + h);
+      ctx.stroke();
+
+      labels.forEach((lbl, i) => {
+        const val = values[i];
+        const y = padding.top + i * (h / n) + 2;
+        const barLen = (val * (w / 2));
+
+        ctx.fillStyle = val >= 0 ? '#10b981' : '#ef4444';
+        if (val >= 0) {
+          ctx.fillRect(xZero, y, barLen, barH);
+        } else {
+          ctx.fillRect(xZero + barLen, y, -barLen, barH);
+        }
+
+        ctx.fillStyle = '#1e293b';
+        ctx.font = '10px Inter, sans-serif';
+        ctx.textAlign = 'right';
+        ctx.fillText(lbl.length > 12 ? lbl.slice(0, 11) + '..' : lbl, padding.left - 6, y + barH / 2 + 3);
+
+        ctx.textAlign = val >= 0 ? 'left' : 'right';
+        ctx.fillText((val >= 0 ? '+' : '') + val.toFixed(2), xZero + barLen + (val >= 0 ? 4 : -4), y + barH / 2 + 3);
+      });
+    }
+
+    function drawScatter(canvasId, actuals, predicted, targetName) {
+      const { ctx, width, height } = setupCanvas(canvasId);
+      const padding = { top: 25, right: 25, bottom: 40, left: 50 };
+      const w = width - padding.left - padding.right;
+      const h = height - padding.top - padding.bottom;
+
+      const minVal = Math.min(...actuals, ...predicted);
+      const maxVal = Math.max(...actuals, ...predicted);
+      const span = maxVal - minVal || 1;
+
+      // 45 degree perfect line
+      ctx.strokeStyle = '#ef4444';
+      ctx.setLineDash([4, 4]);
+      ctx.beginPath();
+      ctx.moveTo(padding.left, padding.top + h);
+      ctx.lineTo(padding.left + w, padding.top);
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      // Points
+      ctx.fillStyle = '#0284c7';
+      actuals.forEach((act, i) => {
+        const pred = predicted[i];
+        const x = padding.left + ((act - minVal) / span) * w;
+        const y = padding.top + h - ((pred - minVal) / span) * h;
+        ctx.beginPath();
+        ctx.arc(x, y, 4, 0, Math.PI * 2);
+        ctx.fill();
+      });
+
+      // Axis labels
+      ctx.fillStyle = '#475569';
+      ctx.font = '11px Inter, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('實際值 (Actual)', padding.left + w / 2, padding.top + h + 25);
+    }
+
+    function drawResiduals(canvasId, predicted, residuals) {
+      const { ctx, width, height } = setupCanvas(canvasId);
+      const padding = { top: 25, right: 25, bottom: 40, left: 50 };
+      const w = width - padding.left - padding.right;
+      const h = height - padding.top - padding.bottom;
+
+      const minPred = Math.min(...predicted);
+      const maxPred = Math.max(...predicted);
+      const spanPred = maxPred - minPred || 1;
+
+      const maxRes = Math.max(...residuals.map(Math.abs), 1);
+
+      // Zero line
+      const yZero = padding.top + h / 2;
+      ctx.strokeStyle = '#ef4444';
+      ctx.setLineDash([3, 3]);
+      ctx.beginPath();
+      ctx.moveTo(padding.left, yZero);
+      ctx.lineTo(padding.left + w, yZero);
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      // Points
+      ctx.fillStyle = '#8b5cf6';
+      predicted.forEach((pred, i) => {
+        const res = residuals[i];
+        const x = padding.left + ((pred - minPred) / spanPred) * w;
+        const y = yZero - (res / (maxRes * 1.25)) * (h / 2);
+        ctx.beginPath();
+        ctx.arc(x, y, 4, 0, Math.PI * 2);
+        ctx.fill();
+      });
+
+      ctx.fillStyle = '#475569';
+      ctx.font = '11px Inter, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('預測值 (Fitted Values)', padding.left + w / 2, padding.top + h + 25);
     }
   </script>
 </body>

@@ -26,6 +26,8 @@ class FeatureSelector:
         Filter Method: SelectKBest using F-regression ANOVA test.
         Ranks features based on univariate linear correlation with target.
         """
+        n_feats = X_train.shape[1]
+        k = min(k, n_feats)
         selector = SelectKBest(score_func=f_regression, k=k)
         selector.fit(X_train, y_train)
         mask = selector.get_support()
@@ -47,6 +49,8 @@ class FeatureSelector:
         Wrapper Method: Recursive Feature Elimination (RFE) with Linear Regression.
         Recursively trains estimator and removes the lowest coefficient feature.
         """
+        n_feats = X_train.shape[1]
+        n_features_to_select = min(n_features_to_select, max(1, n_feats // 2 if n_feats <= 6 else n_feats - 2))
         base_estimator = LinearRegression()
         rfe = RFE(estimator=base_estimator, n_features_to_select=n_features_to_select, step=1)
         rfe.fit(X_train, y_train)
@@ -68,9 +72,14 @@ class FeatureSelector:
         Embedded Method: Lasso (L1 regularization) with Cross-Validation.
         Features with non-zero coefficients are retained.
         """
-        lasso = LassoCV(cv=5, random_state=self.random_state, max_iter=5000)
+        lasso = LassoCV(cv=min(5, max(2, len(y_train) // 10)), random_state=self.random_state, max_iter=5000)
         lasso.fit(X_train, y_train)
         mask = np.abs(lasso.coef_) > 1e-4
+        if not np.any(mask):
+            # If all zeros, keep top non-zero or largest magnitude
+            max_idx = np.argmax(np.abs(lasso.coef_))
+            mask[max_idx] = True
+
         selected_features = [f for f, m in zip(self.feature_names, mask) if m]
 
         self.selection_results["Lasso (Embedded)"] = {
@@ -87,16 +96,20 @@ class FeatureSelector:
     ) -> Tuple[np.ndarray, List[str]]:
         """
         Multicollinearity Filter: Iteratively removes features with VIF > threshold.
-        Solves severe collinearity between features (e.g. infant deaths vs under-five deaths).
+        Solves severe collinearity between features.
         """
         current_cols = list(range(len(self.feature_names)))
         dropped = []
+        min_cols = max(1, min(5, len(self.feature_names) // 2))
 
-        while True:
+        while len(current_cols) > min_cols:
             X_curr = X_train[:, current_cols]
-            vifs = [variance_inflation_factor(X_curr, i) for i in range(X_curr.shape[1])]
+            try:
+                vifs = [variance_inflation_factor(X_curr, i) for i in range(X_curr.shape[1])]
+            except Exception:
+                break
             max_vif = max(vifs)
-            if max_vif > threshold and len(current_cols) > 5:
+            if max_vif > threshold:
                 max_idx = vifs.index(max_vif)
                 dropped.append(self.feature_names[current_cols[max_idx]])
                 del current_cols[max_idx]
@@ -113,6 +126,7 @@ class FeatureSelector:
             "dropped_features": dropped
         }
         return mask, selected_features
+
 
     def get_comparison_table(self) -> pd.DataFrame:
         """Generates a binary indicator table showing feature inclusion across methods."""

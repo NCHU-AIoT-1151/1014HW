@@ -59,7 +59,7 @@ class LifeExpectancyPredictor:
         self.all_features = self.artifact["all_features"]
         self.selected_mask = self.artifact["selected_mask"]
         self.imputation_values = self.artifact["imputation_values"]
-        self.status_mapping = self.artifact["status_mapping"]
+        self.status_mapping = self.artifact.get("status_mapping", {"Developing": 0, "Developed": 1})
 
     def predict_sample(self, raw_data: Dict[str, Any]) -> float:
         """
@@ -67,7 +67,6 @@ class LifeExpectancyPredictor:
         imputes missing fields, encodes Status, scales features, applies mask,
         and returns predicted life expectancy in years.
         """
-        # Fill missing with median
         row = []
         for feat in self.all_features:
             if feat == "Status":
@@ -108,3 +107,55 @@ class LifeExpectancyPredictor:
             "Net Change (Years)": diff,
             "Interventions Applied": policy_changes
         }
+
+
+class SteelEnergyPredictor:
+    """Production inference engine for predicting industrial steel energy consumption (Usage_kWh)."""
+
+    def __init__(self, pipeline_path: str):
+        self.artifact = ModelDeployer.load_pipeline(pipeline_path)
+        self.model = self.artifact["model"]
+        self.scaler = self.artifact["scaler"]
+        self.all_features = self.artifact["all_features"]
+        self.selected_mask = self.artifact["selected_mask"]
+        self.imputation_values = self.artifact.get("imputation_values", {})
+
+    def predict_sample(self, raw_data: Dict[str, Any]) -> float:
+        """Takes feature dictionary and predicts energy usage in kWh."""
+        row = []
+        for feat in self.all_features:
+            val = raw_data.get(feat, self.imputation_values.get(feat, 0.0))
+            row.append(float(val))
+
+        X_df = pd.DataFrame([row], columns=self.all_features)
+        X_scaled = self.scaler.transform(X_df)
+        X_selected = X_scaled[:, self.selected_mask]
+        prediction = self.model.predict(X_selected)[0]
+        return float(round(max(0.0, prediction), 2))
+
+    def simulate_energy_saving(
+        self, base_operation_data: Dict[str, Any], operational_adjustments: Dict[str, float]
+    ) -> Dict[str, Any]:
+        """
+        Simulates smart factory energy management adjustments:
+        e.g. Improving power factor (+10%), reducing reactive power (-20 kVarh).
+        """
+        base_pred = self.predict_sample(base_operation_data)
+
+        modified_data = base_operation_data.copy()
+        for k, delta in operational_adjustments.items():
+            if k in modified_data:
+                modified_data[k] = modified_data[k] + delta
+
+        new_pred = self.predict_sample(modified_data)
+        diff = round(new_pred - base_pred, 2)
+        pct_change = round((diff / base_pred) * 100, 2) if base_pred > 0 else 0.0
+
+        return {
+            "Base Usage (kWh)": base_pred,
+            "Optimized Usage (kWh)": new_pred,
+            "Energy Saved (kWh)": -diff if diff < 0 else 0.0,
+            "Percentage Change (%)": pct_change,
+            "Adjustments": operational_adjustments
+        }
+

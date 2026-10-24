@@ -10,7 +10,7 @@
 
 ## 目錄 (Table of Contents)
 1. [專案摘要 (Executive Summary)](#1-專案摘要-executive-summary)
-2. [作業目標與評分標準對照](#2-作業目標與評分標準對照)
+2. [作業目標與評分標準對照（含加分項）](#2-作業目標與評分標準對照含加分項)
 3. [資料集介紹 (Dataset Overview)](#3-資料集介紹-dataset-overview)
 4. [CRISP-DM 六大階段實作流程](#4-crisp-dm-六大階段實作流程)
    - [Phase 1: 商業理解 (Business Understanding)](#phase-1-商業理解-business-understanding)
@@ -21,9 +21,13 @@
    - [Phase 6: 模型部署與情境模擬 (Deployment & Simulation)](#phase-6-模型部署與情境模擬-deployment--simulation)
 5. [模型比較與特徵選擇成效分析](#5-模型比較與特徵選擇成效分析)
 6. [迴歸分析五大基本假設檢定結果](#6-迴歸分析五大基本假設檢定結果)
-7. [專案結構與模組說明 (Project Architecture)](#7-專案結構與模組說明-project-architecture)
-8. [環境安裝與快速重現指南 (Quickstart)](#8-環境安裝與快速重現指南-quickstart)
-9. [結論與公共衛生政策建議 (Conclusion)](#9-結論與公共衛生政策建議-conclusion)
+7. [加分項目實作成果 (Bonus Features)](#7-加分項目實作成果-bonus-features)
+   - [加分項 1：下拉視窗呈現兩種 Problem (>13 特徵)](#加分項-1下拉視窗呈現兩種-problem-13-特徵)
+   - [加分項 2：可任意輸入 Dataset 並全自動分析 (50_Startups)](#加分項-2可任意輸入-dataset-並全自動分析-50_startups)
+8. [專案結構與模組說明 (Project Architecture)](#8-專案結構與模組說明-project-architecture)
+9. [環境安裝與快速重現指南 (Quickstart)](#9-環境安裝與快速重現指南-quickstart)
+10. [結論與公共衛生政策建議 (Conclusion)](#10-結論與公共衛生政策建議-conclusion)
+
 
 ---
 
@@ -320,81 +324,145 @@ flowchart LR
 
 ---
 
-## 7. 專案結構與模組說明 (Project Architecture)
+## 7. 加分項目實作成果 (Bonus Features)
+
+本專案全面實作課程規定之兩大加分項目，兼顧**互動網頁端 (HTML Report)**、**命令列端 (CLI)** 與 **Jupyter Notebook**：
+
+```
+==================== 加分項目對照表 ====================
+【加分項 1】（加總分 1 分）：有下拉視窗呈現兩種 Problem（皆符合 >13 個特徵門檻）
+【加分項 2】（加總分 2 分）：可任意輸入 Dataset（如 50_Startups.csv）並全自動分析
+======================================================
+```
+
+---
+
+### 加分項 1：下拉視窗呈現兩種 Problem (>13 特徵)
+
+在成果報告網頁（`report.html` / `index.html`）頂端提供**題目切換下拉選單 (Dropdown Switcher)** 與**切換標籤**，使用者可無縫切換瀏覽兩大題目的完整 CRISP-DM 成果報告：
+
+| 題目項目 | 資料集名稱 | 候選特徵數 | 預測目標 (Target) | 最佳測試集 $R^2$ | 部署模擬器 |
+| :--- | :--- | :---: | :--- | :---: | :--- |
+| **問題一 (標準題)** | **WHO Life Expectancy** | **20 個特徵** | `Life expectancy` (歲) | **$0.8244$** | 公共衛生與教育政策改革效益模擬器 |
+| **問題二 (加分項 1)** | **Steel Industry Energy** | **14 個特徵** | `Usage_kWh` (度電) | **$0.9844$** | 智慧工廠功因改善與削峰填谷節能模擬器 |
+
+#### 問題二（鋼鐵工業能源消耗）成果摘要：
+1. **資料集特性**：取自 UCI / Kaggle 經典資料集，包含韓國光陽 DAEWOO 鋼鐵廠 35,040 筆 15 分鐘連續監控數據，100% 完整無缺失。
+2. **14 個工程特徵**（嚴格符合投影片規定之 14~39 特徵 / >13 特徵規範）：
+   - 電氣指標：`Lagging_Current_Reactive.Power_kVarh`、`Leading_Current_Reactive_Power_kVarh`、`CO2(tCO2)`、`Lagging_Current_Power_Factor`、`Leading_Current_Power_Factor`、`NSM`
+   - 時間與排程特徵：`Month`、`Hour`、`Day`、`Is_Weekday`、`Load_Maximum_Load`、`Load_Medium_Load`、`Day_Weekend`、`Peak_Hour`
+3. **模型成效**：OLS 基準模型與 Lasso 模型均取得極高之 **$R^2 = 0.9844$**，測試集 $\text{RMSE} = 4.21$ kWh，$\text{MAE} = 2.54$ kWh。
+4. **五大計量假設檢定**：殘差獨立性 $\text{Durbin-Watson} = 1.9946$（完美對齊理想值 2.0，無自相關），線性關係 Pearson $r = 0.9921$。
+5. **CLI 一鍵執行**：
+   ```bash
+   # 執行第二題目管線
+   python main.py --problem steel
+   # 執行第二題目推論與節能模擬
+   python predict.py --problem steel
+   ```
+
+---
+
+### 加分項 2：可任意輸入 Dataset 並全自動分析 (50_Startups)
+
+針對老師指定之範例資料集 `https://raw.githubusercontent.com/Avik-Jain/100-Days-Of-ML-Code/master/datasets/50_Startups.csv` 以及任意第三方 CSV，本專案提供**純前端互動實驗室**與**後端通用管線**：
+
+#### 1. 網頁端全自動迴歸實驗室 (`report.html` -> 選擇「加分實驗室」)
+- **零依賴純前端執行**：內建輕量化純 JavaScript 線性代數運算器與統計檢定演算法，無需後端伺服器即可直接在瀏覽器運算。
+- **輸入支援**：支援輸入任何公開 CSV 網址（預設帶入 `50_Startups.csv`，亦可點擊快速載入按鈕）或直接上傳本機 `.csv` 檔案。
+- **全自動 CRISP-DM 流程**：
+  1. **資料理解**：自動計算特徵型態、缺失值數、Mean、Std、Min、Median、Max 及與目標變數之 Pearson 相關係數。
+  2. **資料預處理**：自動進行缺失值中位數/眾數補值、類別變數 One-Hot Dummy 編碼、特徵 Z-score 標準化、80/20 切分。
+  3. **特徵選擇與模型訓練**：對比 Baseline OLS (全特徵)、SelectKBest (Filter) 及 Ridge Regression (L2 正則化)。
+  4. **模型評估與計量假設**：即時輸出 $R^2$、Adjusted $R^2$、RMSE、MAE、MSE，並檢定 Linearity ($r$)、Durbin-Watson、Skewness、Kurtosis 等。
+  5. **4 大動態 Canvas 圖表**：目標變數分佈直方圖、特徵相關係數排序條形圖、Actual vs Predicted 散佈圖、Residuals vs Fitted 圖。
+  6. **線上即時推論卡**：自動根據解析出之特徵生成輸入欄位，使用者調整數值即可即時獲得模型預測輸出！
+
+#### 2. CLI 命令列任意資料集執行
+```bash
+# 輸入任意 CSV 網址（以 50_Startups.csv 為例）
+python main.py --url https://raw.githubusercontent.com/Avik-Jain/100-Days-Of-ML-Code/master/datasets/50_Startups.csv --target Profit
+
+# 輸入本機任意 CSV 檔案
+python main.py --file data/Steel_industry_data.csv --target Usage_kWh
+```
+
+---
+
+## 8. 專案結構與模組說明 (Project Architecture)
 
 專案嚴格遵循軟體工程與模組化開發原則，目錄結構如下：
 
 ```
 1014HW/
 ├── data/
-│   ├── Life_Expectancy_Data.csv       # Kaggle WHO 原始資料集
-│   └── processed_data.csv             # 經階層補值與編碼之清洗資料集
-├── figures/                           # 9 張高解析度分析與診斷成果圖 (300 DPI)
-│   ├── 01_target_distribution.png     # 目標分佈與開發狀態箱型圖
-│   ├── 02_correlation_matrix.png      # 20 變數相關係數熱力圖
-│   ├── 03_missing_values_heatmap.png  # 補值前後缺失值狀況對比
-│   ├── 04_feature_distributions.png   # 關鍵自變數直方圖與 KDE
-│   ├── 05_feature_selection_comparison.png # 4 種特徵選擇方法交集圖
-│   ├── 06_model_metrics_comparison.png# 測試集 R2, RMSE, MAE 指標長條圖
-│   ├── 07_actual_vs_predicted.png     # 預測值 vs 實際值散佈圖
-│   ├── 08_residuals_analysis.png      # 四象限殘差分析與假設診斷圖
-│   └── 09_feature_importance.png      # 標準化迴歸係數重要性排序圖
+│   ├── Life_Expectancy_Data.csv       # Kaggle WHO 原始資料集 (問題一, 20 特徵)
+│   ├── Steel_industry_data.csv        # UCI 鋼鐵工業能源資料集 (問題二加分項 1, 14 特徵)
+│   └── processed_data.csv             # 清洗與預處理後資料集
+├── figures/                           # 18 張高解析度分析與診斷成果圖 (300 DPI)
+│   ├── 01_target_distribution.png ~ 09_feature_importance.png       # 問題一圖表 (9 張)
+│   └── steel_01_target_distribution.png ~ steel_09_feature_importance.png # 問題二圖表 (9 張)
 ├── models/
-│   └── best_linear_regression_pipeline.joblib # 序列化最佳預測管線模型
-├── src/                               # 核心功能模組
-│   ├── __init__.py
-│   ├── data_loader.py                 # 資料載入與 EDA 統計工具
-│   ├── preprocessor.py                # 補值、二元編碼、標準化與資料切分
-│   ├── feature_selection.py           # SelectKBest, RFE, Lasso, VIF 特徵選擇器
+│   ├── best_linear_regression_pipeline.joblib   # 問題一序列化模型管線
+│   └── steel_linear_regression_pipeline.joblib  # 問題二序列化模型管線
+├── src/                               # 核心模組架構
+│   ├── __init__.py                    # 套件導出
+│   ├── data_loader.py                 # 多題目與自訂 URL/檔案資料載入模組
+│   ├── preprocessor.py                # 壽命、鋼鐵 (14 特徵) 及任意資料集自動前處理器
+│   ├── feature_selection.py           # SelectKBest, RFE, Lasso, VIF 自適應特徵選擇器
 │   ├── models.py                      # OLS, Ridge, Lasso, ElasticNet 訓練器
 │   ├── evaluation.py                  # 評估指標與五大迴歸假設統計檢驗
-│   ├── visualization.py               # 科研級 Matplotlib/Seaborn 繪圖模組
-│   └── deployment.py                  # 推論引擎與政策情境試算模組
-├── main.py                            # 端到端主執行腳本 (CRISP-DM 全自動化執行)
-├── notebook.ipynb                     # 包含執行輸出與視覺化之完整 Jupyter Notebook
-├── predict.py                         # 獨立部署 CLI 互動推論工具
+│   ├── visualization.py               # 科研級多題目 Matplotlib/Seaborn 繪圖模組
+│   └── deployment.py                  # 壽命推論與智慧工廠節能試算模組
+├── main.py                            # 主執行腳本 (支援 --problem life/steel/all/custom, --url, --file)
+├── predict.py                         # 獨立推論 CLI (支援 --problem life/steel)
+├── index.html                         # 多題目切換與任意資料集分析互動報告 (部署入口)
+├── report.html                        # 成果報告網頁 (與 index.html 內容同步)
+├── notebook.ipynb                     # 包含兩大題目與加分項完整輸出之 Jupyter Notebook
 ├── requirements.txt                   # Python 套件依賴清單
-├── .gitignore                         # Git 忽略配置
 └── README.md                          # 本專案完整技術報告
 ```
 
 ---
 
-## 8. 環境安裝與快速重現指南 (Quickstart)
+## 9. 環境安裝與快速重現指南 (Quickstart)
 
-### 步驟 1：建立並啟用虛擬環境（可選）
-```bash
-python -m venv venv
-# Windows:
-.\venv\Scripts\activate
-# Linux/macOS:
-source venv/bin/activate
-```
-
-### 步驟 2：安裝依賴套件
+### 步驟 1：安裝依賴套件
 ```bash
 pip install -r requirements.txt
 ```
 
-### 步驟 3：一鍵執行端到端完整管線
-此腳本將自動執行 CRISP-DM 所有階段、訓練所有模型、計算指標並重新繪製所有圖表：
+### 步驟 2：執行端到端管線
 ```bash
-python main.py
+# 執行問題一 (WHO 壽命, 20 特徵)
+python main.py --problem life
+
+# 執行問題二 (鋼鐵工業能源, 14 特徵, 加分項 1)
+python main.py --problem steel
+
+# 執行加分項 2 (任意資料集自動分析，以 50_Startups 示範)
+python main.py --url https://raw.githubusercontent.com/Avik-Jain/100-Days-Of-ML-Code/master/datasets/50_Startups.csv --target Profit
+
+# 一鍵執行全部題目
+python main.py --problem all
 ```
 
-### 步驟 4：執行獨立推論與政策模擬 CLI
+### 步驟 3：執行獨立推論與情境模擬 CLI
 ```bash
-python predict.py
+python predict.py --problem life
+python predict.py --problem steel
 ```
 
-### 步驟 5：檢視互動式 Jupyter Notebook
-```bash
-jupyter notebook notebook.ipynb
+### 步驟 4：開啟互動式成果報告網頁 (支援題目下拉切換與線上分析實驗室)
+雙擊開啟專案目錄下的 `report.html` 或在終端機輸入：
+```powershell
+start report.html
 ```
 
 ---
 
-## 9. 結論與公共衛生政策建議 (Conclusion)
+## 10. 結論與公共衛生政策建議 (Conclusion)
+
 
 1. **特徵工程與特徵選擇的核心價值**：
    - 盲目投入所有可用特徵並不能保證最佳預測表現。在原始 20 個特徵中，包含數個對模型毫無增益或高度共線的雜訊。
